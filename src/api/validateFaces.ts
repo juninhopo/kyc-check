@@ -52,27 +52,47 @@ router.post('/',
 
       // Validate images
       if (!isValidImage(image1) || !isValidImage(image2)) {
+        // Clean up files
+        cleanupFiles([image1.path, image2.path]);
+        
         return res.status(400).json({
           success: false,
           error: 'Invalid image format. Only JPG, JPEG, and PNG are supported.'
         } as ValidationResponse);
       }
 
-      // Compare faces
-      const result = await compareFaces(image1.path, image2.path);
+      try {
+        // Compare faces
+        const result = await compareFaces(image1.path, image2.path);
 
-      // Clean up temporary files
-      cleanupFiles([image1.path, image2.path]);
+        // Clean up temporary files
+        cleanupFiles([image1.path, image2.path]);
 
-      return res.json({
-        success: true,
-        data: result
-      } as ValidationResponse);
+        return res.json({
+          success: true,
+          data: result
+        } as ValidationResponse);
+      } catch (error) {
+        // Clean up temporary files even on error
+        cleanupFiles([image1.path, image2.path]);
+        
+        // Check for specific error types
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        
+        if (errorMessage.includes('Could not detect face')) {
+          return res.status(400).json({
+            success: false,
+            error: 'Faces não detectados em uma ou ambas as imagens. Por favor, utilize imagens com rostos claramente visíveis.'
+          } as ValidationResponse);
+        }
+        
+        throw error;
+      }
     } catch (error) {
       console.error('Error in face validation:', error);
       return res.status(500).json({
         success: false,
-        error: 'Error processing face comparison'
+        error: 'Erro ao processar a comparação facial. Por favor, tente novamente.'
       } as ValidationResponse);
     }
   }

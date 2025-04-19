@@ -7,6 +7,7 @@
     "dev": "nodemon --exec ts-node src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc",
+    "download-models": "ts-node src/downloadModels.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -18,10 +19,11 @@
   "author": "Darlan Jr. <kelgaxd@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "@vladmandic/face-api": "^1.7.15",
     "canvas": "^3.1.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "face-api.js": "^0.22.2",
     "multer": "1.4.5-lts.2"
   },
   "devDependencies": {
