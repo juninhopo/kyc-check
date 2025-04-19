@@ -1,0 +1,35 @@
+{
+  "name": "facecheck",
+  "version": "1.0.0",
+  "description": "A facial validation service for KYC (Know Your Customer) processes",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "face",
+    "recognition",
+    "kyc",
+    "validation"
+  ],
+  "author": "Darlan Jr. <kelgaxd@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^3.1.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "face-api.js": "^0.22.2",
+    "multer": "1.4.5-lts.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^20.17.30",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
