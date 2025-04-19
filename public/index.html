@@ -100,6 +100,39 @@
             background-color: #fcf8e3;
             color: #8a6d3b;
         }
+        .debug-section {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+        .debug-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+        .debug-info {
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .debug-toggle {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .debug-toggle button {
+            width: auto;
+            background-color: #2196F3;
+        }
+        .debug-toggle button:hover {
+            background-color: #0b7dda;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +166,15 @@
         </div>
         
         <div id="result"></div>
+
+        <div class="debug-toggle">
+            <button id="toggleDebug">Mostrar Informações de Debug</button>
+        </div>
+        
+        <div id="debug-section" class="debug-section" style="display: none;">
+            <h3>Informações de Debug</h3>
+            <div id="debug-info" class="debug-info">Nenhuma informação disponível.</div>
+        </div>
     </div>
 
     <script>
@@ -144,6 +186,16 @@
             const preview2 = document.getElementById('preview2');
             const resultDiv = document.getElementById('result');
             const loadingDiv = document.getElementById('loading');
+            const toggleDebugButton = document.getElementById('toggleDebug');
+            const debugSection = document.getElementById('debug-section');
+            const debugInfo = document.getElementById('debug-info');
+            
+            // Toggle debug section
+            toggleDebugButton.addEventListener('click', () => {
+                const isVisible = debugSection.style.display !== 'none';
+                debugSection.style.display = isVisible ? 'none' : 'block';
+                toggleDebugButton.textContent = isVisible ? 'Mostrar Informações de Debug' : 'Ocultar Informações de Debug';
+            });
             
             // Update preview and enable/disable compare button
             const updateUI = () => {
@@ -180,6 +232,13 @@
                 updateUI();
             });
             
+            // Format debug information
+            const formatDebugInfo = (debugInfo) => {
+                if (!debugInfo) return 'Nenhuma informação disponível.';
+                
+                return JSON.stringify(debugInfo, null, 2);
+            };
+            
             // Handle compare button click
             compareButton.addEventListener('click', async () => {
                 if (!image1Input.files[0] || !image2Input.files[0]) {
@@ -207,7 +266,7 @@
                     const result = await response.json();
                     
                     if (result.success) {
-                        const { isMatch, similarity } = result.data;
+                        const { isMatch, similarity, debugInfo } = result.data;
                         const similarityPercent = Math.round(similarity * 100);
                         
                         if (isMatch) {
@@ -217,6 +276,9 @@
                             resultDiv.textContent = `As faces não correspondem. Similaridade: ${similarityPercent}%`;
                             resultDiv.className = 'no-match';
                         }
+                        
+                        // Update debug info
+                        document.getElementById('debug-info').textContent = formatDebugInfo(debugInfo);
                     } else {
                         resultDiv.textContent = `Erro: ${result.error}`;
                         resultDiv.className = 'error';

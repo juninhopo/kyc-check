@@ -17,6 +17,33 @@ export type ValidationResponse = {
 export type ValidationResult = {
   isMatch: boolean;
   similarity: number;
+  debugInfo?: FaceDebugInfo;
+};
+
+/**
+ * Debug information about face detection and comparison
+ */
+export type FaceDebugInfo = {
+  threshold: number;
+  rawDistance: number;
+  faceDetection1?: FaceDetectionInfo;
+  faceDetection2?: FaceDetectionInfo;
+  processingTimeMs: number;
+  usingMockImplementation: boolean;
+};
+
+/**
+ * Face detection information
+ */
+export type FaceDetectionInfo = {
+  score: number;
+  box: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  landmarks?: Record<string, unknown>;
 };
 
 /**

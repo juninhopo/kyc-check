@@ -5,7 +5,7 @@
 import * as faceapi from '@vladmandic/face-api';
 import fs from 'fs';
 import path from 'path';
-import { ValidationResult } from '../types/types';
+import { ValidationResult, FaceDetectionInfo, FaceDebugInfo } from '../types/types';
 import { loadModels } from './modelUtils';
 import { isModelLoaded } from '../index';
 
@@ -41,9 +41,29 @@ const areAllModelsLoaded = (): boolean => {
 };
 
 /**
+ * Convert face detection to debug info format
+ */
+const extractFaceDetectionInfo = (detection: faceapi.WithFaceDescriptor<faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection; }>>) => {
+  const detectionInfo: FaceDetectionInfo = {
+    score: detection.detection.score,
+    box: {
+      x: detection.detection.box.x,
+      y: detection.detection.box.y,
+      width: detection.detection.box.width,
+      height: detection.detection.box.height
+    }
+  };
+  
+  return detectionInfo;
+};
+
+/**
  * Compare two face images and determine if they belong to the same person
  */
 export const compareFaces = async (image1Path: string, image2Path: string): Promise<ValidationResult> => {
+  const startTime = Date.now();
+  let usingMock = false;
+  
   try {
     // Check if models are loaded using the global flag
     if (!areAllModelsLoaded()) {
@@ -59,11 +79,13 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         } else {
           console.error('Models loading failed:', loadResult.error);
           console.warn('Falling back to mock implementation due to model loading failure');
+          usingMock = true;
           return useMockImplementation(image1Path, image2Path);
         }
       } catch (error) {
         console.error('Failed to load face-api.js models:', error);
         console.warn('Falling back to mock implementation due to model loading failure');
+        usingMock = true;
         return useMockImplementation(image1Path, image2Path);
       }
     }
@@ -110,13 +132,26 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
       const similarity = 1 - Math.min(distance, 1.0); // Clamp to 0-1 range
       const isMatch = similarity >= config.similarityThreshold;
       
+      // Create debug info
+      const processingTimeMs = Date.now() - startTime;
+      const debugInfo: FaceDebugInfo = {
+        threshold: config.similarityThreshold,
+        rawDistance: distance,
+        faceDetection1: extractFaceDetectionInfo(detection1),
+        faceDetection2: extractFaceDetectionInfo(detection2),
+        processingTimeMs,
+        usingMockImplementation: false
+      };
+      
       return {
         isMatch,
         similarity,
+        debugInfo
       };
     } catch (error) {
       console.error('Error in face detection/comparison:', error);
       console.warn('Falling back to mock implementation due to face detection failure');
+      usingMock = true;
       return useMockImplementation(image1Path, image2Path);
     }
   } catch (error) {
@@ -138,7 +173,13 @@ const useMockImplementation = (image1Path: string, image2Path: string): Validati
   if (isSameFile) {
     return {
       isMatch: true,
-      similarity: 0.95
+      similarity: 0.95,
+      debugInfo: {
+        threshold: config.similarityThreshold,
+        rawDistance: 0.05,
+        processingTimeMs: 0,
+        usingMockImplementation: true
+      }
     };
   }
   
@@ -160,5 +201,11 @@ const useMockImplementation = (image1Path: string, image2Path: string): Validati
   return {
     isMatch,
     similarity: mockSimilarity,
+    debugInfo: {
+      threshold: config.similarityThreshold,
+      rawDistance: 1 - mockSimilarity,
+      processingTimeMs: 0,
+      usingMockImplementation: true
+    }
   };
 }; 

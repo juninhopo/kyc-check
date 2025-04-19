@@ -2,6 +2,15 @@
  * Main application entry point for FaceCheck
  */
 
+// Polyfill for isNullOrUndefined (deprecated in Node.js)
+// This needs to be before any TensorFlow imports
+import util from 'util';
+// @ts-ignore - Adding polyfill for deprecated function
+if (!util.isNullOrUndefined) {
+  // @ts-ignore - Ignoring type check for polyfill
+  util.isNullOrUndefined = (arg: unknown): boolean => arg === null || arg === undefined;
+}
+
 import '@tensorflow/tfjs-node';
 import 'dotenv/config';
 import express from 'express';
