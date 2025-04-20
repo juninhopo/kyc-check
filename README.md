@@ -34,7 +34,7 @@ Create a `.env` file in the root directory:
 
 ```
 PORT=3000
-API_THRESHOLD=0.75
+API_THRESHOLD=0.50
 ```
 
 ## Usage
