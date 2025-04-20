@@ -9,6 +9,11 @@ A facial validation service for KYC (Know Your Customer) processes that compares
 - Face similarity comparison
 - Percentage-based similarity score
 - Simple and intuitive user interface
+- REST API for integration with other systems
+
+## Live Demo
+
+A live demo is available at: [https://facecheck-production.up.railway.app/](https://facecheck-production.up.railway.app/)
 
 ## Installation
 
@@ -70,28 +75,87 @@ type ValidationResponse = {
   data?: {
     isMatch: boolean;
     similarity: number;
+    debugInfo?: {
+      // Debug information about face detection
+    };
   };
   error?: string;
 };
 ```
 
+#### Sample Response (Success)
+
+```json
+{
+  "success": true,
+  "data": {
+    "isMatch": true,
+    "similarity": 0.92,
+    "debugInfo": {
+      "face1": {
+        "confidence": 0.99,
+        "detectionTime": 156
+      },
+      "face2": {
+        "confidence": 0.98,
+        "detectionTime": 142
+      },
+      "comparisonTime": 85
+    }
+  }
+}
+```
+
+#### Sample Response (Error)
+
+```json
+{
+  "success": false,
+  "error": "Faces não detectados em uma ou ambas as imagens. Por favor, utilize imagens com rostos claramente visíveis."
+}
+```
+
+### API Usage Example with cURL
+
+Here's an example of how to use the API with cURL to compare two face images:
+
+```bash
+curl -X POST \
+  https://facecheck-production.up.railway.app/api/validate-faces \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'image1=@/path/to/first/image.jpg' \
+  -F 'image2=@/path/to/second/image.jpg'
+```
+
+For local testing:
+
+```bash
+curl -X POST \
+  http://localhost:3000/api/validate-faces \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'image1=@/path/to/first/image.jpg' \
+  -F 'image2=@/path/to/second/image.jpg'
+```
+
 ## Technologies
 
 - Frontend: HTML, CSS, JavaScript
-- Backend: Node.js
-- Face Recognition: Face-api.js or similar face matching library
+- Backend: Node.js, Express
+- Face Recognition: @vladmandic/face-api.js
+- File Handling: multer
 
 ## Project Structure
 
 ```
 facecheck/
-├── index.html          # Main frontend interface
 ├── public/             # Static assets
+│   └── index.html      # Main frontend interface
 ├── src/
 │   ├── api/            # API endpoints
 │   ├── services/       # Face detection services
 │   ├── types/          # TypeScript type definitions
 │   └── utils/          # Utility functions
+├── uploads/            # Temporary storage for uploaded images
 ├── .env                # Environment variables
 └── package.json        # Project dependencies
 ```
