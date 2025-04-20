@@ -2,6 +2,8 @@
 
 A facial validation service for KYC (Know Your Customer) processes that compares two face images to determine if they belong to the same person.
 
+You can use documents such as a driver's license to verify if it matches the photo.
+
 ## Features
 
 - Upload two images containing faces
