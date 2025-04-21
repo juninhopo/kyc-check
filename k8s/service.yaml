@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: facecheck
+  labels:
+    app: facecheck
+spec:
+  selector:
+    app: facecheck
+  ports:
+  - port: 3000
+    targetPort: 3000
+    name: http
+  type: ClusterIP 
