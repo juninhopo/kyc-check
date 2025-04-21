@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variáveis
-APP_NAME="facecheck"
+APP_NAME="kyc-check"
 DOCKER_IMAGE="$APP_NAME:latest"
 
 # Construir imagem Docker
@@ -19,21 +19,17 @@ echo "Carregando imagem no minikube..."
 minikube image load $DOCKER_IMAGE
 
 # Criar namespace
-kubectl create namespace $APP_NAME --dry-run=client -o yaml | kubectl apply -f -
+kubectl create namespace kyc-check --dry-run=client -o yaml | kubectl apply -f -
 
-# Aplicar manifestos
-echo "Aplicando manifestos Kubernetes..."
-kubectl apply -f k8s/deployment.yaml -n $APP_NAME
-kubectl apply -f k8s/service.yaml -n $APP_NAME
+# Aplicar manifestos atualizados
+kubectl apply -f k8s/deployment.yaml -n kyc-check
+kubectl apply -f k8s/service.yaml -n kyc-check
 
 # Verificar status dos pods
 echo "Verificando status dos pods..."
-kubectl get pods -n $APP_NAME
+kubectl get pods -n kyc-check
 
-# Expor serviço
-echo "Expondo serviço na porta 3000..."
-kubectl port-forward -n $APP_NAME service/$APP_NAME 3000:3000 &
-PF_PID=$!
+# Iniciar o port-forward
+kubectl port-forward -n kyc-check service/kyc-check 3000:3000
 
-echo "Aplicação disponível em: http://localhost:3000"
-echo "Para parar o port-forward, use: kill $PF_PID" 
+echo "Aplicação disponível em: http://localhost:3000" 

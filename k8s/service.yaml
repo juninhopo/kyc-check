@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: facecheck
+  name: kyc-check
   labels:
-    app: facecheck
+    app: kyc-check
 spec:
   selector:
-    app: facecheck
+    app: kyc-check
   ports:
   - port: 3000
     targetPort: 3000

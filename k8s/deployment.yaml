@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: facecheck
+  name: kyc-check
   labels:
-    app: facecheck
+    app: kyc-check
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: facecheck
+      app: kyc-check
   template:
     metadata:
       labels:
-        app: facecheck
+        app: kyc-check
     spec:
       containers:
-      - name: facecheck
-        image: facecheck:latest
+      - name: kyc-check
+        image: kyc-check:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
