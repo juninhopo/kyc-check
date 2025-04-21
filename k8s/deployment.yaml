@@ -2,10 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kyc-check
-  labels:
-    app: kyc-check
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: kyc-check
@@ -17,21 +15,5 @@ spec:
       containers:
       - name: kyc-check
         image: kyc-check:latest
-        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3000
-        env:
-        - name: NODE_ENV
-          value: production
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5 

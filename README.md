@@ -1,4 +1,4 @@
-# FaceCheck
+# KYC-check
 
 A facial validation service for KYC (Know Your Customer) processes that compares two face images to determine if they belong to the same person.
 

@@ -1,35 +1,26 @@
-FROM node:20-alpine
+# Use uma imagem base do Node.js
+FROM node:20
 
-# Instalar pnpm
-RUN npm install -g pnpm@latest
-
-# Instalar dependências necessárias para canvas
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    pixman-dev \
-    cairo-dev \
-    pango-dev \
-    libjpeg-turbo-dev
-
-# Criar diretório da aplicação
+# Defina o diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos de dependências
-COPY package*.json pnpm-lock.yaml* ./
+# Copie os arquivos de package.json e pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
 
-# Instalar dependências
-RUN pnpm install --frozen-lockfile
+# Instale o pnpm
+RUN npm install -g pnpm
 
-# Copiar código da aplicação
+# Instale as dependências
+RUN pnpm install
+
+# Copie o restante dos arquivos do projeto
 COPY . .
 
-# Compilar a aplicação
+# Execute o build do projeto
 RUN pnpm build
 
-# Expor porta
+# Exponha a porta que o aplicativo usará
 EXPOSE 3000
 
-# Iniciar a aplicação
-CMD ["pnpm", "start"] 
+# Comando para iniciar o aplicativo
+CMD ["pnpm", "start"]
