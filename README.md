@@ -6,6 +6,7 @@ You can use documents such as a driver's license to verify if it matches the pho
 
 ## 📋 Table of Contents
 - [Features](#-features)
+- [Articles](#-articles)
 - [Live Demo](#-live-demo)
 - [Installation](#-installation)
 - [Environment Setup](#-environment-setup)
@@ -23,6 +24,10 @@ You can use documents such as a driver's license to verify if it matches the pho
 - ✅ Percentage-based similarity score
 - ✅ Simple and intuitive user interface
 - ✅ REST API for integration with other systems
+
+## 📚 Articles
+
+- [Basic KYC Implementation Guide using KYC_CHECK](https://dev.to/juninhopo/basic-kyc-implementation-guide-using-kyccheck-3fld) - A practical guide on how to implement and use the KYC_CHECK library in your projects.
 
 ## 🌐 Live Demo
 
