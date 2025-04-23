@@ -6,7 +6,7 @@ import express, { Request, Response, Router } from 'express';
 import { compareFaces } from '../services/faceService';
 import { cleanupFiles } from '../utils/imageUtils';
 import { ValidationResponse } from '../types/types';
-import { upload } from '../';
+import { upload } from '../utils/upload';
 
 // Define the router
 const router: Router = express.Router();

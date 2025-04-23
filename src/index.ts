@@ -15,14 +15,10 @@ import '@tensorflow/tfjs-node';
 import 'dotenv/config';
 import express from 'express';
 import path from 'path';
-import multer from 'multer';
 import validateFacesRoute from './api/validateFaces';
 import { loadModels } from './services/modelUtils';
 import * as faceapi from '@vladmandic/face-api';
 import * as canvas from 'canvas';
-import fs from "fs"
-import { fileTypeFromBuffer } from 'file-type';
-import { cleanupFiles } from './utils/imageUtils';
 
 // Configuration
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
@@ -40,41 +36,6 @@ faceapi.env.monkeyPatch({
 
 // Initialize app
 const app = express();
-
-// Setup file uploads
-export const upload = multer({
-  dest: 'uploads/',
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max file size
-  },
-  fileFilter: async (_req, file, cb) => {
-    try {
-    const filePath = file.path;
-
-    const buffer = fs.readFileSync(filePath);
-
-    const validMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    const validExtensions = ['.jpg', '.jpeg', '.png'] 
-    
-    const fileExtension = path.extname(file.originalname).toLowerCase();
-    
-    const type = await fileTypeFromBuffer(buffer);
-
-    if (!validExtensions.includes(fileExtension) || !type || !validMimeTypes.includes(type.mime)) {
-       cleanupFiles([file.path]);
-
-      return cb(new Error('Invalid image format. Only JPG, JPEG, and PNG are supported.'));
-    }
-    
-    return cb(null, true);
-
-  } catch (error) {
-      console.error(error)
-
-      return cb(new Error('Error validating file'));
-    }
-  }
-});
 
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));
