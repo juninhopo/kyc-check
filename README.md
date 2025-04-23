@@ -21,7 +21,7 @@ A live demo is available at: [https://facecheck-production.up.railway.app/](http
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/facecheck.git
+git clone https://github.com/juninhopo/kyc-check.git
 cd facecheck
 
 # Install dependencies
