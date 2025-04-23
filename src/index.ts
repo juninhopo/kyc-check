@@ -15,7 +15,6 @@ import '@tensorflow/tfjs-node';
 import 'dotenv/config';
 import express from 'express';
 import path from 'path';
-import multer from 'multer';
 import validateFacesRoute from './api/validateFaces';
 import { loadModels } from './services/modelUtils';
 import * as faceapi from '@vladmandic/face-api';
@@ -37,14 +36,6 @@ faceapi.env.monkeyPatch({
 
 // Initialize app
 const app = express();
-
-// Setup file uploads
-const upload = multer({
-  dest: 'uploads/',
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max file size
-  },
-});
 
 // Static files
 app.use(express.static(path.join(__dirname, '../public')));

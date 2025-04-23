@@ -3,28 +3,13 @@
  */
 
 import express, { Request, Response, Router } from 'express';
-import multer from 'multer';
 import { compareFaces } from '../services/faceService';
-import { isValidImage, cleanupFiles } from '../utils/imageUtils';
+import { cleanupFiles } from '../utils/imageUtils';
 import { ValidationResponse } from '../types/types';
+import { upload } from '../utils/upload';
 
 // Define the router
 const router: Router = express.Router();
-
-// Configure multer for file uploads
-const upload = multer({
-  dest: 'uploads/',
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB max
-  },
-});
-
-// Define the extended request type
-interface MulterRequest extends Request {
-  files?: {
-    [fieldname: string]: Express.Multer.File[];
-  };
-}
 
 /**
  * POST /api/validate-faces
@@ -37,29 +22,19 @@ router.post('/',
   ]), 
   async (req: Request, res: Response) => {
     try {
-      const multerReq = req as MulterRequest;
-      
+
       // Check if files exist
-      if (!multerReq.files || !multerReq.files.image1 || !multerReq.files.image2) {
+
+      // TODO: ideally, we should validate if the file exists and also if it's a file 
+      if (!req.files || !("image1" in req.files) || !("image2" in req.files)) {
         return res.status(400).json({
           success: false,
           error: 'Two images are required for comparison'
-        } as ValidationResponse);
+        } satisfies ValidationResponse);
       }
 
-      const image1 = multerReq.files.image1[0];
-      const image2 = multerReq.files.image2[0];
-
-      // Validate images
-      if (!isValidImage(image1) || !isValidImage(image2)) {
-        // Clean up files
-        cleanupFiles([image1.path, image2.path]);
-        
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid image format. Only JPG, JPEG, and PNG are supported.'
-        } as ValidationResponse);
-      }
+      const image1 = req!.files.image1[0];
+      const image2 = req!.files.image2[0];
 
       try {
         // Compare faces
@@ -71,7 +46,7 @@ router.post('/',
         return res.json({
           success: true,
           data: result
-        } as ValidationResponse);
+        } satisfies ValidationResponse);
       } catch (error) {
         // Clean up temporary files even on error
         cleanupFiles([image1.path, image2.path]);
@@ -83,7 +58,7 @@ router.post('/',
           return res.status(400).json({
             success: false,
             error: 'Faces não detectados em uma ou ambas as imagens. Por favor, utilize imagens com rostos claramente visíveis.'
-          } as ValidationResponse);
+          } satisfies ValidationResponse);
         }
         
         throw error;
@@ -93,7 +68,7 @@ router.post('/',
       return res.status(500).json({
         success: false,
         error: 'Erro ao processar a comparação facial. Por favor, tente novamente.'
-      } as ValidationResponse);
+      } satisfies ValidationResponse);
     }
   }
 );
