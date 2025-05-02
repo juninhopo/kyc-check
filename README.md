@@ -1,4 +1,4 @@
-# KYC-CHECK
+# KYC-CHECK <img src="public/kyc-icon.png" align="right" width="102"/>
 
 A facial validation service for KYC (Know Your Customer) processes that compares two face images to determine if they belong to the same person.
 
@@ -37,7 +37,7 @@ A live demo is available at: [https://kyc-check-production.up.railway.app/](http
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/kyc-check.git
+git clone https://github.com/juninhopo/kyc-check.git
 cd kyc-check
 
 # Install dependencies
