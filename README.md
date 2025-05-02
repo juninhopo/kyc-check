@@ -158,6 +158,10 @@ kyc-check/
 └── package.json        # Project dependencies
 ```
 
+## 🙏 Credits
+
+- Icon designed by [Eric Viana](https://github.com/ericviana)
+
 ## 🤝 Contributing
 
 1. Fork the repository
