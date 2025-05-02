@@ -1,0 +1,4 @@
+ignoredBuiltDependencies:
+  - '@tensorflow/tfjs-node'
+  - canvas
+  - core-js
