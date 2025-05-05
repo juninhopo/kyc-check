@@ -30,6 +30,13 @@ const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
   try {
     // Decode image using TensorFlow.js Node
     const tensor = tf.node.decodeImage(buffer);
+
+    // Ensure we return a 3D tensor with shape [height, width, channels]
+    // This is what face-api expects for tf.Tensor3D
+    if (tensor.shape.length === 4) {
+      // If we get a batch tensor [1, height, width, channels], squeeze it
+      return tensor.squeeze([0]) as tf.Tensor3D;
+    }
     return tensor as tf.Tensor3D;
   } catch (error) {
     console.error('Error converting buffer to tensor:', error);
@@ -38,35 +45,76 @@ const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
 };
 
 /**
+ * Explicitly adds browser-compatible properties to canvas to ensure face-api compatibility
+ */
+const enhanceCanvasCompatibility = (canvas: napiCanvas.Canvas): napiCanvas.Canvas & Partial<HTMLCanvasElement> => {
+  // Add essential HTMLCanvasElement properties that face-api might use
+  const enhancedCanvas = canvas as napiCanvas.Canvas & Partial<HTMLCanvasElement>;
+
+  // Explicitly ensure width/height properties are accessible as numbers
+  if (!enhancedCanvas.width || typeof enhancedCanvas.width !== 'number') {
+    Object.defineProperty(enhancedCanvas, 'width', {
+      value: canvas.width || 640,
+      writable: true,
+      enumerable: true
+    });
+  }
+
+  if (!enhancedCanvas.height || typeof enhancedCanvas.height !== 'number') {
+    Object.defineProperty(enhancedCanvas, 'height', {
+      value: canvas.height || 480,
+      writable: true,
+      enumerable: true
+    });
+  }
+
+  // Add crucial methods that face-api might expect
+  if (!enhancedCanvas.getContext) {
+    enhancedCanvas.getContext = ((contextType: "2d", contextAttributes?: napiCanvas.ContextAttributes) => {
+      return canvas.getContext(contextType, contextAttributes) as unknown as CanvasRenderingContext2D | null;
+    }) as any;
+  }
+
+  return enhancedCanvas;
+};
+
+/**
  * Load an image file to be processed by face-api
  */
-const loadImage = async (imagePath: string): Promise<any> => {
+const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.Canvas & Partial<HTMLCanvasElement>)> => {
   try {
     // Read the file as a buffer
     const buffer = fs.readFileSync(imagePath);
 
-    // First try to use the @napi-rs/canvas method with proper error handling
+    // Use tensor approach first as it's more consistently compatible with face-api
     try {
-      const image = await napiCanvas.loadImage(buffer);
-
-      // Ensure dimensions are valid numbers (not undefined, null or 0)
-      const width = image.width || 640;
-      const height = image.height || 480;
-
-      // Use our safe canvas creation function
-      const canv = safeCreateCanvas(width, height);
-      const ctx = canv.getContext('2d');
-
-      // Draw the image on canvas
-      ctx.drawImage(image, 0, 0, width, height);
-
-      return canv;
-    } catch (canvasError) {
-      console.warn('Failed to load image with @napi-rs/canvas:', canvasError);
-      console.warn('Falling back to tensor-based approach...');
-
-      // Fallback to TensorFlow.js tensor approach
+      console.log(`Loading image as tensor: ${imagePath}`);
       return await bufferToTensor(buffer);
+    } catch (tensorError) {
+      console.warn('Failed to load image as tensor:', tensorError);
+      console.warn('Falling back to canvas approach...');
+
+      // Fallback to canvas approach
+      try {
+        const image = await napiCanvas.loadImage(buffer);
+
+        // Ensure dimensions are valid numbers
+        const width = image.width || 640;
+        const height = image.height || 480;
+
+        // Create canvas with explicit dimensions
+        const canvas = safeCreateCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+
+        // Draw the image on canvas
+        ctx.drawImage(image, 0, 0, width, height);
+
+        // Enhance canvas with browser-compatible properties
+        return enhanceCanvasCompatibility(canvas);
+      } catch (canvasError) {
+        console.error('Failed to load image with canvas:', canvasError);
+        throw new Error('Failed to load image with any available method');
+      }
     }
   } catch (error: unknown) {
     console.error('Error loading image:', error);
@@ -155,7 +203,7 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
       // Detect faces in both images - use try/catch for each detection to provide better error messages
       let detection1;
       try {
-        detection1 = await faceapi.detectSingleFace(img1)
+        detection1 = await faceapi.detectSingleFace(img1 as faceapi.TNetInput)
           .withFaceLandmarks()
           .withFaceDescriptor();
 
@@ -171,7 +219,7 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
 
       let detection2;
       try {
-        detection2 = await faceapi.detectSingleFace(img2)
+        detection2 = await faceapi.detectSingleFace(img2 as faceapi.TNetInput)
           .withFaceLandmarks()
           .withFaceDescriptor();
 

@@ -24,7 +24,7 @@ import { setupCanvas } from './utils/canvasSetup';
 // Configuration
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-// Setup canvas for face-api.js - this is now handled by our utility
+// Setup canvas for face-api.js
 setupCanvas();
 
 // Initialize app

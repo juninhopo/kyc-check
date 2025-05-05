@@ -1,7 +1,9 @@
 /**
  * Canvas setup utility for face-api.js
- * This file provides a unified configuration for @napi-rs/canvas
- * to work properly with face-api.js in Node.js environment
+ *
+ * This utility centralizes configuration for @napi-rs/canvas to work properly with face-api.js
+ * in a Node.js environment. It addresses common issues with canvas compatibility when
+ * using face-api.js outside of a browser context.
  */
 
 import * as faceapi from '@vladmandic/face-api';
@@ -13,6 +15,7 @@ const DEFAULT_HEIGHT = 480;
 
 /**
  * Enhanced ImageData class that adds browser-compatible properties
+ * as expected by face-api.js
  */
 export class EnhancedImageData extends napiCanvas.ImageData {
   readonly colorSpace: PredefinedColorSpace = 'srgb';
@@ -24,6 +27,8 @@ export class EnhancedImageData extends napiCanvas.ImageData {
 
 /**
  * Safe canvas creation function that ensures valid dimensions
+ * This avoids the "Failed to convert napi value Undefined into rust type `i32`" error
+ * by providing fallback values for width and height
  */
 export const safeCreateCanvas = (width?: unknown, height?: unknown): napiCanvas.Canvas => {
   // Ensure width is a positive number
@@ -53,14 +58,9 @@ export const setupCanvas = (): void => {
   try {
     console.log('Setting up @napi-rs/canvas for face-api.js...');
 
-    // Create a wrapper for Canvas constructor that enforces valid dimensions
-    const CanvasWrapper = function(width?: number, height?: number): napiCanvas.Canvas {
-      return safeCreateCanvas(width, height);
-    } as unknown as typeof HTMLCanvasElement;
-
-    // Apply monkey patch with our safe implementations
+    // Apply monkey patch with safe implementations
     faceapi.env.monkeyPatch({
-      Canvas: CanvasWrapper,
+      Canvas: napiCanvas.Canvas as unknown as typeof HTMLCanvasElement,
       Image: napiCanvas.Image as unknown as typeof HTMLImageElement,
       ImageData: EnhancedImageData as unknown as typeof ImageData,
       createCanvasElement: safeCreateCanvas as unknown as any,
