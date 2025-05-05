@@ -18,21 +18,14 @@ import path from 'path';
 import validateFacesRoute from './api/validateFaces';
 import { loadModels } from './services/modelUtils';
 import * as faceapi from '@vladmandic/face-api';
-import * as canvas from 'canvas';
+// Import our custom canvas setup utility
+import { setupCanvas } from './utils/canvasSetup';
 
 // Configuration
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-// Configure face-api to use node-canvas
-// This needs to be done before trying to load any models
-faceapi.env.monkeyPatch({
-  // @ts-expect-error - Type mismatch between node-canvas and browser canvas, but API is compatible
-  Canvas: canvas.Canvas,
-  // @ts-expect-error - Type mismatch between node-canvas and browser canvas, but API is compatible 
-  Image: canvas.Image,
-  // @ts-expect-error - Type mismatch between node-canvas and browser canvas, but API is compatible
-  ImageData: canvas.ImageData
-});
+// Setup canvas for face-api.js - this is now handled by our utility
+setupCanvas();
 
 // Initialize app
 const app = express();
@@ -61,13 +54,13 @@ const startServer = async () => {
     // Attempt to load face-api.js models at startup
     console.log('Initializing face recognition models...');
     const result = await loadModels();
-    
+
     if (result.success) {
       // Explicitly set the global flags for model loading
       isModelLoaded.ssdMobilenetv1 = faceapi.nets.ssdMobilenetv1.isLoaded;
       isModelLoaded.faceLandmark68Net = faceapi.nets.faceLandmark68Net.isLoaded;
       isModelLoaded.faceRecognitionNet = faceapi.nets.faceRecognitionNet.isLoaded;
-      
+
       if (isModelLoaded.ssdMobilenetv1 && isModelLoaded.faceLandmark68Net && isModelLoaded.faceRecognitionNet) {
         console.log('Face recognition models initialized successfully.');
       } else {
@@ -94,4 +87,4 @@ const startServer = async () => {
 };
 
 // Start the server
-startServer(); 
+startServer();
