@@ -163,8 +163,8 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
           throw new Error('No face detected in first image');
         }
       } catch (detectionError: unknown) {
-        const errorMessage = detectionError instanceof Error 
-          ? detectionError.message 
+        const errorMessage = detectionError instanceof Error
+          ? detectionError.message
           : 'Unknown detection error';
         throw new Error(`Face detection failed on first image: ${errorMessage}`);
       }
@@ -179,8 +179,8 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
           throw new Error('No face detected in second image');
         }
       } catch (detectionError: unknown) {
-        const errorMessage = detectionError instanceof Error 
-          ? detectionError.message 
+        const errorMessage = detectionError instanceof Error
+          ? detectionError.message
           : 'Unknown detection error';
         throw new Error(`Face detection failed on second image: ${errorMessage}`);
       }
