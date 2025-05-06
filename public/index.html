@@ -6,8 +6,12 @@
     <title>Validador Facial KYC</title>
     <link href="/css/tailwind.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Adicionar script da biblioteca Lottie -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-primary-950 dark:to-primary-900 text-primary-800 dark:text-gray-100 font-sans flex items-center justify-center">
+
+
     <div class="container max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white dark:bg-primary-900 rounded-xl shadow-card p-8 mb-8">
             <div class="flex items-center justify-center mb-8">
@@ -66,12 +70,9 @@
                 </button>
             </div>
 
-            <div id="loading" class="loading hidden flex justify-center items-center my-6">
-                <svg class="animate-spin h-8 w-8 text-accent-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="text-primary-600 dark:text-primary-400">Processando, por favor aguarde...</span>
+            <div id="loading" class="loading hidden flex flex-col justify-center items-center my-6">
+                <div id="lottie-animation" class="w-48 h-48"></div>
+                <span class="text-primary-600 dark:text-primary-400 mt-2">Processando, por favor aguarde...</span>
             </div>
 
             <div id="result" class="hidden rounded-md p-4 text-center font-bold text-lg"></div>
@@ -103,6 +104,69 @@
             const toggleDebugButton = document.getElementById('toggleDebug');
             const debugSection = document.getElementById('debug-section');
             const debugInfo = document.getElementById('debug-info');
+
+            // Verificar se a biblioteca Lottie foi carregada corretamente
+            if (typeof lottie === 'undefined') {
+                console.error('Biblioteca Lottie não foi carregada corretamente');
+                return;
+            }
+
+            console.log('Inicializando animação Lottie...');
+
+            // Inicializar a animação Lottie
+            let faceRecognitionAnimation;
+            const lottieContainer = document.getElementById('lottie-animation');
+
+            // Verificar se o contêiner existe
+            if (!lottieContainer) {
+                console.error('Contêiner da animação Lottie não encontrado');
+                return;
+            }
+
+            try {
+                // Pré-carregar o arquivo JSON da animação para garantir que está válido
+                fetch('./face-recognition.json')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erro ao carregar arquivo de animação: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(animationData => {
+                        // Carrega a animação usando os dados pré-carregados, não o caminho
+                        faceRecognitionAnimation = lottie.loadAnimation({
+                            container: lottieContainer,
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: false,
+                            animationData: animationData // Usa os dados JSON já carregados
+                        });
+
+                        console.log('Animação Lottie carregada com sucesso');
+
+                        faceRecognitionAnimation.addEventListener('DOMLoaded', () => {
+                            console.log('DOM da animação Lottie carregado com sucesso');
+
+                            // Testar a animação brevemente para verificar se está funcionando
+                            loadingDiv.classList.remove('hidden');
+                            faceRecognitionAnimation.play();
+
+                            setTimeout(() => {
+                                faceRecognitionAnimation.stop();
+                                loadingDiv.classList.add('hidden');
+                            }, 500);
+                        });
+
+                        faceRecognitionAnimation.addEventListener('error', (error) => {
+                            console.error('Erro na animação Lottie:', error);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar o arquivo de animação:', error);
+                    });
+            } catch (error) {
+                console.error('Erro ao inicializar a animação Lottie:', error);
+            }
 
             // Toggle debug section
             toggleDebugButton.addEventListener('click', () => {
@@ -178,6 +242,15 @@
                 resultDiv.textContent = '';
                 resultDiv.className = 'hidden';
                 loadingDiv.classList.remove('hidden');
+
+                // Iniciar animação e verificar se está funcionando
+                if (faceRecognitionAnimation) {
+                    console.log('Iniciando animação Lottie...');
+                    faceRecognitionAnimation.goToAndPlay(0, true);
+                } else {
+                    console.error('A animação Lottie não foi inicializada corretamente');
+                }
+
                 compareButton.disabled = true;
 
                 try {
@@ -218,6 +291,12 @@
                     resultDiv.classList.remove('hidden');
                 } finally {
                     loadingDiv.classList.add('hidden');
+
+                    // Parar a animação se ela foi inicializada corretamente
+                    if (faceRecognitionAnimation) {
+                        faceRecognitionAnimation.stop();
+                    }
+
                     compareButton.disabled = false;
                 }
             });
