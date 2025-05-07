@@ -18,11 +18,10 @@ export default function RootLayout({
       <head>
         <link rel="stylesheet" href="/css/tailwind.css" />
       </head>
-      <body className="min-h-screen font-sans">
+      <body className="min-h-screen flex items-center justify-center font-sans">
         <ThemeProvider>
-          <main className="w-full flex items-center justify-center">
+
             {children}
-          </main>
         </ThemeProvider>
       </body>
     </html>
