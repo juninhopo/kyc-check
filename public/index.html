@@ -1,297 +1,119 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="bg-gray-50 dark:bg-primary-950">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validador Facial KYC</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .file-inputs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        .file-input {
-            flex: 1;
-            min-width: 300px;
-        }
-        .file-input label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        .preview-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0;
-        }
-        .preview {
-            width: 200px;
-            height: 200px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f8f8f8;
-            overflow: hidden;
-        }
-        .preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin-top: 20px;
-        }
-        .match {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .no-match {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        .error {
-            background-color: #fcf8e3;
-            color: #8a6d3b;
-        }
-        .debug-section {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 15px;
-            background-color: #f9f9f9;
-        }
-        .debug-section h3 {
-            margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 8px;
-        }
-        .debug-info {
-            font-family: monospace;
-            max-height: 300px;
-            overflow-y: auto;
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 4px;
-            white-space: pre-wrap;
-        }
-        .debug-toggle {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .debug-toggle button {
-            width: auto;
-            background-color: #2196F3;
-        }
-        .debug-toggle button:hover {
-            background-color: #0b7dda;
-        }
-    </style>
+    <link href="/css/tailwind.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+    <script defer src="/js/theme-init.js"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Validador Facial KYC</h1>
-        
-        <div class="file-inputs">
-            <div class="file-input">
-                <label for="image1">Imagem da Pessoa 1:</label>
-                <input type="file" id="image1" accept="image/*">
-            </div>
-            <div class="file-input">
-                <label for="image2">Imagem da Pessoa 2:</label>
-                <input type="file" id="image2" accept="image/*">
-            </div>
-        </div>
-        
-        <div class="preview-container">
-            <div class="preview" id="preview1">
-                <span>Prévia 1</span>
-            </div>
-            <div class="preview" id="preview2">
-                <span>Prévia 2</span>
-            </div>
-        </div>
-        
-        <button id="compare" disabled>Comparar Faces</button>
-        
-        <div id="loading" class="loading">
-            Processando, por favor aguarde...
-        </div>
-        
-        <div id="result"></div>
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-primary-950 dark:to-primary-900 text-primary-800 dark:text-gray-100 font-sans flex items-center justify-center">
 
-        <div class="debug-toggle">
-            <button id="toggleDebug">Mostrar Informações de Debug</button>
+    <div class="container max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-primary-900 rounded-xl shadow-card p-8 mb-8">
+            <div class="flex flex-col gap-4 items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <img src="kyc-icon.png" alt="KYC Icon" class="h-10 w-10 mr-3">
+                    <h1 class="text-3xl md:text-4xl font-bold font-display text-primary-800 dark:text-gray-100">KYC Check</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center space-x-2">
+                        <button id="pt-br" class="lang-button language-active">
+                            <img src="https://flagcdn.com/w40/br.png" alt="Português" class="flag-icon">
+                            <span>PT</span>
+                        </button>
+                        <button id="en-us" class="lang-button opacity-50">
+                            <img src="https://flagcdn.com/w40/us.png" alt="English" class="flag-icon">
+                            <span>EN</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <button id="theme-toggle" class="lang-button  rounded-md light:bg-white light:border light:border-gray-200 dark:bg-gray-800 dark:bg-primary-800 hover:bg-gray-200 dark:hover:bg-primary-700 transition-colors ">
+                            <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden text-primary-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                            </svg>
+                            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden text-yellow-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="card dark:card-dark p-4">
+                    <label for="image1" class="block text-primary-700 dark:text-gray-300 font-medium mb-2" data-lang-pt="Imagem da Pessoa 1" data-lang-en="Person 1 Image">Imagem da Pessoa 1</label>
+                    <div class="relative">
+                        <input type="file" id="image1" accept="image/*" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                        <div class="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-lg p-4 text-center flex flex-col items-center justify-center h-32 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
+                            <svg class="w-8 h-8 text-primary-400 dark:text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span class="text-sm text-primary-500 dark:text-primary-400" data-lang-pt="Clique ou arraste uma imagem" data-lang-en="Click or drag an image">Clique ou arraste uma imagem</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card dark:card-dark p-4">
+                    <label for="image2" class="block text-primary-700 dark:text-gray-300 font-medium mb-2" data-lang-pt="Imagem da Pessoa 2" data-lang-en="Person 2 Image">Imagem da Pessoa 2</label>
+                    <div class="relative">
+                        <input type="file" id="image2" accept="image/*" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
+                        <div class="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-lg p-4 text-center flex flex-col items-center justify-center h-32 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
+                            <svg class="w-8 h-8 text-primary-400 dark:text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span class="text-sm text-primary-500 dark:text-primary-400" data-lang-pt="Clique ou arraste uma imagem" data-lang-en="Click or drag an image">Clique ou arraste uma imagem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="preview-container card dark:card-dark p-4 flex items-center justify-center h-64">
+                    <div id="preview1" class="w-full h-full flex items-center justify-center">
+                        <span class="text-primary-500 dark:text-primary-400" data-lang-pt="Prévia 1" data-lang-en="Preview 1">Prévia 1</span>
+                    </div>
+                </div>
+
+                <div class="preview-container card dark:card-dark p-4 flex items-center justify-center h-64">
+                    <div id="preview2" class="w-full h-full flex items-center justify-center">
+                        <span class="text-primary-500 dark:text-primary-400" data-lang-pt="Prévia 2" data-lang-en="Preview 2">Prévia 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center mb-6">
+                <button id="compare" disabled class="flex btn bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-700 rounded-md py-2 px-4 text-sm shadow-subtle hover:bg-gray-50 dark:hover:bg-primary-700">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <span data-lang-pt="Comparar Faces" data-lang-en="Compare Faces">Comparar Faces</span>
+                </button>
+            </div>
+
+            <div id="loading" class="loading hidden flex flex-col justify-center items-center my-6">
+                <div class="spinner mb-4"></div>
+                <span class="text-primary-600 dark:text-primary-400 mt-2" data-lang-pt="Processando, por favor aguarde..." data-lang-en="Processing, please wait...">Processando, por favor aguarde...</span>
+            </div>
+
+            <div id="result" class="hidden rounded-md p-4 text-center font-bold text-lg"></div>
         </div>
-        
-        <div id="debug-section" class="debug-section" style="display: none;">
-            <h3>Informações de Debug</h3>
-            <div id="debug-info" class="debug-info">Nenhuma informação disponível.</div>
+
+        <div class="text-center mt-6">
+            <button id="toggleDebug" class="btn bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-700 rounded-md py-2 px-4 text-sm shadow-subtle hover:bg-gray-50 dark:hover:bg-primary-700">
+                <span data-lang-pt="Mostrar Informações de Debug" data-lang-en="Show Debug Information">Mostrar Informações de Debug</span>
+            </button>
+        </div>
+
+        <div id="debug-section" class="bg-white dark:bg-primary-900 rounded-lg shadow-card border border-gray-200 dark:border-primary-800 mt-6 p-6 hidden">
+            <h3 class="text-xl font-semibold font-display text-primary-700 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-primary-800 pb-2" data-lang-pt="Informações de Debug" data-lang-en="Debug Information">Informações de Debug</h3>
+            <div id="debug-info" class="bg-gray-50 dark:bg-primary-800 text-primary-800 dark:text-gray-300 font-mono text-sm p-4 rounded-md overflow-auto max-h-96 border border-gray-200 dark:border-primary-700">
+                <pre class="json-formatter"><span data-lang-pt="Nenhuma informação disponível." data-lang-en="No information available.">Nenhuma informação disponível.</span></pre>
+            </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const image1Input = document.getElementById('image1');
-            const image2Input = document.getElementById('image2');
-            const compareButton = document.getElementById('compare');
-            const preview1 = document.getElementById('preview1');
-            const preview2 = document.getElementById('preview2');
-            const resultDiv = document.getElementById('result');
-            const loadingDiv = document.getElementById('loading');
-            const toggleDebugButton = document.getElementById('toggleDebug');
-            const debugSection = document.getElementById('debug-section');
-            const debugInfo = document.getElementById('debug-info');
-            
-            // Toggle debug section
-            toggleDebugButton.addEventListener('click', () => {
-                const isVisible = debugSection.style.display !== 'none';
-                debugSection.style.display = isVisible ? 'none' : 'block';
-                toggleDebugButton.textContent = isVisible ? 'Mostrar Informações de Debug' : 'Ocultar Informações de Debug';
-            });
-            
-            // Update preview and enable/disable compare button
-            const updateUI = () => {
-                const hasImage1 = image1Input.files && image1Input.files.length > 0;
-                const hasImage2 = image2Input.files && image2Input.files.length > 0;
-                
-                compareButton.disabled = !(hasImage1 && hasImage2);
-            };
-            
-            // Show image preview
-            const showPreview = (file, previewElement) => {
-                if (file) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = (e) => {
-                        previewElement.innerHTML = '';
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        previewElement.appendChild(img);
-                    };
-                    
-                    reader.readAsDataURL(file);
-                }
-            };
-            
-            // Handle file selection
-            image1Input.addEventListener('change', () => {
-                showPreview(image1Input.files[0], preview1);
-                updateUI();
-            });
-            
-            image2Input.addEventListener('change', () => {
-                showPreview(image2Input.files[0], preview2);
-                updateUI();
-            });
-            
-            // Format debug information
-            const formatDebugInfo = (debugInfo) => {
-                if (!debugInfo) return 'Nenhuma informação disponível.';
-                
-                return JSON.stringify(debugInfo, null, 2);
-            };
-            
-            // Handle compare button click
-            compareButton.addEventListener('click', async () => {
-                if (!image1Input.files[0] || !image2Input.files[0]) {
-                    resultDiv.textContent = 'Por favor, selecione duas imagens.';
-                    resultDiv.className = 'error';
-                    return;
-                }
-                
-                // Show loading state
-                resultDiv.textContent = '';
-                resultDiv.className = '';
-                loadingDiv.style.display = 'block';
-                compareButton.disabled = true;
-                
-                try {
-                    const formData = new FormData();
-                    formData.append('image1', image1Input.files[0]);
-                    formData.append('image2', image2Input.files[0]);
-                    
-                    const response = await fetch('/api/validate-faces', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        const { isMatch, similarity, debugInfo } = result.data;
-                        const similarityPercent = Math.round(similarity * 100);
-                        
-                        if (isMatch) {
-                            resultDiv.textContent = `As faces correspondem! Similaridade: ${similarityPercent}%`;
-                            resultDiv.className = 'match';
-                        } else {
-                            resultDiv.textContent = `As faces não correspondem. Similaridade: ${similarityPercent}%`;
-                            resultDiv.className = 'no-match';
-                        }
-                        
-                        // Update debug info
-                        document.getElementById('debug-info').textContent = formatDebugInfo(debugInfo);
-                    } else {
-                        resultDiv.textContent = `Erro: ${result.error}`;
-                        resultDiv.className = 'error';
-                    }
-                } catch (error) {
-                    resultDiv.textContent = `Erro ao processar requisição: ${error.message}`;
-                    resultDiv.className = 'error';
-                } finally {
-                    loadingDiv.style.display = 'none';
-                    compareButton.disabled = false;
-                }
-            });
-        });
-    </script>
+    <script defer src="/js/main.js"></script>
 </body>
 </html>

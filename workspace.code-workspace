@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "KYC Check"
+    },
+  ],
+  "settings": {
+    "restoreTerminals.artificialDelayMilliseconds": 700,
+    "restoreTerminals.keepExistingTerminalsOpen": false,
+    "restoreTerminals.runOnStartup": true,
+    "restoreTerminals.terminals": [
+      {
+        "splitTerminals": [
+          {
+            "name": "KYC Server",
+            "commands": [
+              "cd ~/Projects/github-projects/kyc",
+              "pnpm run dev:full",
+            ]
+          },
+          {
+            "name": "Goat Tailwind Server",
+            "commands": [
+              "cd ~/Projects/github-projects/kyc",
+              "git pull",
+            ]
+          },
+        ]
+      },
+    ]
+  }
+}
+
+//

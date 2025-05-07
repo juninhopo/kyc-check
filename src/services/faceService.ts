@@ -1,48 +1,104 @@
-/**
- * Face recognition service
- */
-
 import * as faceapi from '@vladmandic/face-api';
+import * as tf from '@tensorflow/tfjs-node';
 import fs from 'fs';
 import path from 'path';
 import { ValidationResult, FaceDetectionInfo, FaceDebugInfo } from '../types/types';
 import { loadModels } from './modelUtils';
 import { isModelLoaded } from '../index';
+import { setupCanvas, safeCreateCanvas } from '../utils/canvasSetup';
+import * as napiCanvas from '@napi-rs/canvas';
 
-// Canvas is required for face-api.js to work
-// Need to set up canvas for Node.js environment
-const canvas = require('canvas');
-// Configure face-api.js to use canvas
-faceapi.env.monkeyPatch({ Canvas: canvas.Canvas, Image: canvas.Image, ImageData: canvas.ImageData });
+setupCanvas();
 
-/**
- * Configuration for face comparison
- */
 const config = {
   similarityThreshold: process.env.API_THRESHOLD ? parseFloat(process.env.API_THRESHOLD) : 0.75,
 };
 
-/**
- * Load an image file to be processed by face-api
- */
-const loadImage = async (imagePath: string): Promise<any> => {
-  const buffer = fs.readFileSync(imagePath);
-  const image = await canvas.loadImage(buffer);
-  return image;
+
+const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
+  try {
+    const tensor = tf.node.decodeImage(buffer);
+
+    if (tensor.shape.length === 4) {
+      return tensor.squeeze([0]) as tf.Tensor3D;
+    }
+    return tensor as tf.Tensor3D;
+  } catch (error) {
+    console.error('Error converting buffer to tensor:', error);
+    throw new Error('Failed to convert image to tensor');
+  }
 };
 
-/**
- * Checks if all required models are loaded
- */
+const enhanceCanvasCompatibility = (canvas: napiCanvas.Canvas): napiCanvas.Canvas & Partial<HTMLCanvasElement> => {
+  const enhancedCanvas = canvas as napiCanvas.Canvas & Partial<HTMLCanvasElement>;
+
+  if (!enhancedCanvas.width || typeof enhancedCanvas.width !== 'number') {
+    Object.defineProperty(enhancedCanvas, 'width', {
+      value: canvas.width || 640,
+      writable: true,
+      enumerable: true
+    });
+  }
+
+  if (!enhancedCanvas.height || typeof enhancedCanvas.height !== 'number') {
+    Object.defineProperty(enhancedCanvas, 'height', {
+      value: canvas.height || 480,
+      writable: true,
+      enumerable: true
+    });
+  }
+
+  if (!enhancedCanvas.getContext) {
+    enhancedCanvas.getContext = ((contextType: "2d", contextAttributes?: napiCanvas.ContextAttributes) => {
+      return canvas.getContext(contextType, contextAttributes) as unknown as CanvasRenderingContext2D | null;
+    }) as any;
+  }
+
+  return enhancedCanvas;
+};
+
+const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.Canvas & Partial<HTMLCanvasElement>)> => {
+  try {
+    const buffer = fs.readFileSync(imagePath);
+
+    try {
+      console.log(`Loading image as tensor: ${imagePath}`);
+      return await bufferToTensor(buffer);
+    } catch (tensorError) {
+      console.warn('Failed to load image as tensor:', tensorError);
+      console.warn('Falling back to canvas approach...');
+
+      try {
+        const image = await napiCanvas.loadImage(buffer);
+
+        const width = image.width || 640;
+        const height = image.height || 480;
+
+        const canvas = safeCreateCanvas(width, height);
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(image, 0, 0, width, height);
+
+        return enhanceCanvasCompatibility(canvas);
+      } catch (canvasError) {
+        console.error('Failed to load image with canvas:', canvasError);
+        throw new Error('Failed to load image with any available method');
+      }
+    }
+  } catch (error: unknown) {
+    console.error('Error loading image:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error loading image';
+    throw new Error(`Failed to load image: ${errorMessage}`);
+  }
+};
+
+
 const areAllModelsLoaded = (): boolean => {
-  return isModelLoaded.ssdMobilenetv1 && 
-         isModelLoaded.faceLandmark68Net && 
+  return isModelLoaded.ssdMobilenetv1 &&
+         isModelLoaded.faceLandmark68Net &&
          isModelLoaded.faceRecognitionNet;
 };
 
-/**
- * Convert face detection to debug info format
- */
 const extractFaceDetectionInfo = (detection: faceapi.WithFaceDescriptor<faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection; }>>) => {
   const detectionInfo: FaceDetectionInfo = {
     score: detection.detection.score,
@@ -53,26 +109,20 @@ const extractFaceDetectionInfo = (detection: faceapi.WithFaceDescriptor<faceapi.
       height: detection.detection.box.height
     }
   };
-  
+
   return detectionInfo;
 };
 
-/**
- * Compare two face images and determine if they belong to the same person
- */
 export const compareFaces = async (image1Path: string, image2Path: string): Promise<ValidationResult> => {
   const startTime = Date.now();
   let usingMock = false;
-  
+
   try {
-    // Check if models are loaded using the global flag
     if (!areAllModelsLoaded()) {
-      // Try loading models again if they're not loaded
       try {
         console.log('Models not loaded, loading now...');
         const loadResult = await loadModels();
         if (loadResult.success) {
-          // Update global flags
           isModelLoaded.ssdMobilenetv1 = true;
           isModelLoaded.faceLandmark68Net = true;
           isModelLoaded.faceRecognitionNet = true;
@@ -91,7 +141,6 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
     }
 
     try {
-      // Verify models are explicitly loaded before using them
       if (!faceapi.nets.ssdMobilenetv1.isLoaded) {
         throw new Error('SsdMobilenetv1 model is not loaded');
       }
@@ -102,37 +151,56 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         throw new Error('faceRecognitionNet model is not loaded');
       }
 
-      // Load the images
       const img1 = await loadImage(image1Path);
       const img2 = await loadImage(image2Path);
-      
-      // Detect faces in both images
-      const detection1 = await faceapi.detectSingleFace(img1)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-        
-      const detection2 = await faceapi.detectSingleFace(img2)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-      
-      // If we couldn't detect a face in either image, throw an error
-      if (!detection1 || !detection2) {
-        throw new Error('Could not detect face in one or both images');
+
+      console.log('Images loaded successfully, detecting faces...');
+
+      let detection1;
+      try {
+        detection1 = await faceapi.detectSingleFace(img1 as faceapi.TNetInput)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if (!detection1) {
+          throw new Error('No face detected in first image');
+        }
+      } catch (detectionError: unknown) {
+        const errorMessage = detectionError instanceof Error
+          ? detectionError.message
+          : 'Unknown detection error';
+        throw new Error(`Face detection failed on first image: ${errorMessage}`);
       }
-      
-      // Compare face descriptors using euclidean distance
+
+      let detection2;
+      try {
+        detection2 = await faceapi.detectSingleFace(img2 as faceapi.TNetInput)
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        if (!detection2) {
+          throw new Error('No face detected in second image');
+        }
+      } catch (detectionError: unknown) {
+        const errorMessage = detectionError instanceof Error
+          ? detectionError.message
+          : 'Unknown detection error';
+        throw new Error(`Face detection failed on second image: ${errorMessage}`);
+      }
+
+      console.log('Face detection successful, comparing faces...');
+
       const distance = faceapi.euclideanDistance(
         detection1.descriptor,
         detection2.descriptor
       );
-      
-      // Convert distance to similarity (0-1 scale)
-      // Euclidean distance is 0 for identical faces and increases with dissimilarity
-      // We need to convert to a 0-1 scale where 1 is perfect match
-      const similarity = 1 - Math.min(distance, 1.0); // Clamp to 0-1 range
+
+
+      const similarity = 1 - Math.min(distance, 1.0);
       const isMatch = similarity >= config.similarityThreshold;
-      
-      // Create debug info
+
+      console.log(`Face comparison complete: match=${isMatch}, similarity=${similarity.toFixed(4)}`);
+
       const processingTimeMs = Date.now() - startTime;
       const debugInfo: FaceDebugInfo = {
         threshold: config.similarityThreshold,
@@ -142,7 +210,10 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         processingTimeMs,
         usingMockImplementation: false
       };
-      
+
+      if (img1 instanceof tf.Tensor) img1.dispose();
+      if (img2 instanceof tf.Tensor) img2.dispose();
+
       return {
         isMatch,
         similarity,
@@ -161,15 +232,12 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
 };
 
 /**
- * Fallback mock implementation for face comparison
  */
 const useMockImplementation = (image1Path: string, image2Path: string): ValidationResult => {
   console.log('Using mock implementation for face comparison');
-  
-  // Use hash of file paths to generate a consistent similarity value
+
   const isSameFile = path.basename(image1Path) === path.basename(image2Path);
-  
-  // If comparing the same file, return high similarity
+
   if (isSameFile) {
     return {
       isMatch: true,
@@ -182,22 +250,18 @@ const useMockImplementation = (image1Path: string, image2Path: string): Validati
       }
     };
   }
-  
-  // For different files, generate a consistent value based on file paths
-  // This is still a mock but more consistent than random values
+
   const combinedPaths = image1Path + image2Path;
   let mockSimilarity = 0;
-  
-  // Simple hash function to generate a consistent value between 0 and 1
+
   for (let i = 0; i < combinedPaths.length; i++) {
     mockSimilarity += combinedPaths.charCodeAt(i);
   }
-  
-  // Normalize to 0-1 range
+
   mockSimilarity = (mockSimilarity % 100) / 100;
-  
+
   const isMatch = mockSimilarity >= config.similarityThreshold;
-  
+
   return {
     isMatch,
     similarity: mockSimilarity,
@@ -208,4 +272,4 @@ const useMockImplementation = (image1Path: string, image2Path: string): Validati
       usingMockImplementation: true
     }
   };
-}; 
+};
