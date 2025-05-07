@@ -5,16 +5,28 @@ A facial validation service for KYC (Know Your Customer) processes that compares
 You can use documents such as a driver's license to verify if it matches the photo.
 
 ## 📋 Table of Contents
-- [Features](#-features)
-- [Articles](#-articles)
-- [Live Demo](#-live-demo)
-- [Installation](#-installation)
-- [Environment Setup](#-environment-setup)
-- [Usage](#-usage)
-- [API Reference](#-api-reference)
-- [Technologies](#-technologies)
-- [Project Structure](#-project-structure)
-- [Contributing](#-contributing)
+- [KYC-CHECK ](#kyc-check-)
+  - [📋 Table of Contents](#-table-of-contents)
+  - [✨ Features](#-features)
+  - [📚 Articles](#-articles)
+  - [🌐 Live Demo](#-live-demo)
+  - [🚀 Installation](#-installation)
+  - [⚙️ Environment Setup](#️-environment-setup)
+  - [💻 Usage](#-usage)
+  - [🎨 Tailwind CSS](#-tailwind-css)
+    - [Custom Tailwind Components](#custom-tailwind-components)
+  - [📡 API Reference](#-api-reference)
+    - [Face Validation Endpoint](#face-validation-endpoint)
+      - [Request Parameters](#request-parameters)
+      - [Response Structure](#response-structure)
+      - [Example Response](#example-response)
+    - [API Usage Examples](#api-usage-examples)
+  - [🌍 Internationalization](#-internationalization)
+    - [User Interface Language](#user-interface-language)
+    - [API Language Support](#api-language-support)
+  - [📁 Project Structure](#-project-structure)
+  - [🙏 Credits](#-credits)
+  - [🤝 Contributing](#-contributing)
 
 ## ✨ Features
 
@@ -24,6 +36,7 @@ You can use documents such as a driver's license to verify if it matches the pho
 - ✅ Percentage-based similarity score
 - ✅ Simple and intuitive user interface
 - ✅ REST API for integration with other systems
+- ✅ Internationalization (Portuguese & English)
 
 ## 📚 Articles
 
@@ -42,6 +55,9 @@ cd kyc-check
 
 # Install dependencies
 pnpm install
+
+# Download face recognition models
+pnpm run download-models
 ```
 
 ## ⚙️ Environment Setup
@@ -56,17 +72,49 @@ API_THRESHOLD=0.50
 ## 💻 Usage
 
 ```bash
-# Start the development server
-pnpm dev
+# Start the development server with Tailwind CSS watching
+pnpm run dev:full
+
+# OR start only the development server (without Tailwind watching)
+pnpm run dev
 
 # Build for production
-pnpm build
+pnpm run build
+pnpm run build:css
 
 # Start production server
 pnpm start
 ```
 
 Access the application at `http://localhost:3000`
+
+## 🎨 Tailwind CSS
+
+This project uses Tailwind CSS for styling. Here are the available commands for working with Tailwind CSS:
+
+```bash
+# Build Tailwind CSS once
+pnpm run build:css
+
+# Watch for changes and rebuild Tailwind CSS automatically
+pnpm run watch:css
+
+# Start development server with Tailwind CSS watching (recommended for development)
+pnpm run dev:full
+```
+
+### Custom Tailwind Components
+
+The project includes several custom Tailwind components:
+
+- `.btn` - Base button style
+- `.btn-primary` - Primary action button
+- `.btn-secondary` - Secondary action button
+- `.card` / `.card-dark` - Card containers for light/dark modes
+- `.lang-button` - Language selection buttons
+- `.language-active` - Active language indicator
+
+You can find and modify these styles in `/public/tailwind.css`.
 
 ## 📡 API Reference
 
@@ -141,6 +189,33 @@ curl -X POST \
   -F 'image1=@/path/to/first/image.jpg' \
   -F 'image2=@/path/to/second/image.jpg'
 ```
+
+## 🌍 Internationalization
+
+KYC-CHECK supports both Portuguese (Brazil) and English (US) languages:
+
+### User Interface Language
+
+Users can switch between languages by clicking on the language buttons (flags) located in the header:
+- 🇧🇷 Portuguese (Brazil) - Default language
+- 🇺🇸 English (US)
+
+All interface elements, validation messages, and results will automatically be translated based on the selected language.
+
+### API Language Support
+
+When using the API, you can specify the preferred language for error messages:
+
+```bash
+curl -X POST \
+  http://localhost:3000/api/validate-faces \
+  -H 'Content-Type: multipart/form-data' \
+  -H 'Accept-Language: en-US' \
+  -F 'image1=@/path/to/first/image.jpg' \
+  -F 'image2=@/path/to/second/image.jpg'
+```
+
+For Portuguese responses, use `Accept-Language: pt-BR`. If not specified, the API will default to Portuguese.
 
 ## 📁 Project Structure
 

@@ -1,25 +1,16 @@
-/**
- * Script to download face-api models
- */
-
 import '@tensorflow/tfjs-node';
 import * as faceapi from '@vladmandic/face-api';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as https from 'https';
-// Import our centralized canvas setup utility
 import { setupCanvas } from './utils/canvasSetup';
 
-// Setup canvas for face-api.js
 setupCanvas();
 
-// Path to models directory
 const modelsPath = path.join(__dirname, '../models');
 
-// Base URL for models
 const MODEL_URL = 'https://vladmandic.github.io/face-api/model';
 
-// Model files to download
 const MODEL_FILES = [
   'ssd_mobilenetv1_model-weights_manifest.json',
   'ssd_mobilenetv1_model.bin',
@@ -39,9 +30,6 @@ type DownloadFileResult = {
   error?: string;
 };
 
-/**
- * Downloads a file from a URL to a local path
- */
 const downloadFile = ({ url, filePath }: DownloadFileArgs): Promise<DownloadFileResult> => {
   return new Promise((resolve) => {
     const directory = path.dirname(filePath);
@@ -57,11 +45,10 @@ const downloadFile = ({ url, filePath }: DownloadFileArgs): Promise<DownloadFile
         'User-Agent': 'node-fetch/1.0',
         'Accept': 'application/json, application/octet-stream, */*'
       },
-      timeout: 30000 // 30 second timeout
+      timeout: 30000
     };
 
     https.get(url, options, (response) => {
-      // Handle redirects
       if (response.statusCode === 301 || response.statusCode === 302) {
         if (response.headers.location) {
           file.close();
@@ -90,14 +77,13 @@ const downloadFile = ({ url, filePath }: DownloadFileArgs): Promise<DownloadFile
       file.on('finish', () => {
         file.close();
 
-        // Validate JSON files
         if (filePath.endsWith('.json')) {
           try {
             const content = fs.readFileSync(filePath, 'utf8');
             if (content.trim() === '') {
               throw new Error('Empty JSON file');
             }
-            JSON.parse(content); // Will throw if invalid JSON
+            JSON.parse(content);
             resolve({ success: true });
           } catch (error) {
             fs.unlinkSync(filePath);
@@ -140,19 +126,16 @@ const downloadModels = async (): Promise<DownloadModelsResult> => {
   const failedModels: string[] = [];
 
   try {
-    // Ensure models directory exists
     if (!fs.existsSync(modelsPath)) {
       fs.mkdirSync(modelsPath, { recursive: true });
     }
 
-    // Clean up models directory to ensure fresh download
     console.log('Cleaning up existing models directory...');
     const files = fs.readdirSync(modelsPath);
     for (const file of files) {
       fs.unlinkSync(path.join(modelsPath, file));
     }
 
-    // Download each model file manually
     console.log('Downloading model files directly...');
     for (const modelFile of MODEL_FILES) {
       const url = `${MODEL_URL}/${modelFile}`;
@@ -178,19 +161,16 @@ const downloadModels = async (): Promise<DownloadModelsResult> => {
       return { success: false, failedModels };
     }
 
-    // Verify downloads by loading models
     console.log('Verifying model files by loading models...');
     await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelsPath);
     await faceapi.nets.faceLandmark68Net.loadFromDisk(modelsPath);
     await faceapi.nets.faceRecognitionNet.loadFromDisk(modelsPath);
 
-    // Check if models are loaded
     if (faceapi.nets.ssdMobilenetv1.isLoaded &&
         faceapi.nets.faceLandmark68Net.isLoaded &&
         faceapi.nets.faceRecognitionNet.isLoaded) {
       console.log('All models downloaded and loaded successfully!');
 
-      // List available models in directory
       console.log('Models available in directory:');
       const updatedFiles = fs.readdirSync(modelsPath);
       updatedFiles.forEach(file => console.log(`- ${file}`));
@@ -217,7 +197,6 @@ const downloadModels = async (): Promise<DownloadModelsResult> => {
   }
 };
 
-// Execute the download script
 downloadModels()
   .then(result => {
     if (result.success) {

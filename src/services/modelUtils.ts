@@ -1,21 +1,14 @@
-/**
- * Utilities for managing face-api.js models
- */
-
 import * as faceapi from '@vladmandic/face-api';
 import fs from 'fs';
 import path from 'path';
 import https from 'https';
 import { dirname } from 'path';
 import { IncomingMessage } from 'http';
-// Import our canvas setup utility
 import { setupCanvas } from '../utils/canvasSetup';
 
-// Type definitions for better type safety
 type ModelName = string;
 type ModelUrl = string;
 
-// Result types for operations
 type DownloadResult = {
   success: boolean;
   modelName: ModelName;
@@ -33,21 +26,15 @@ type LoadModelsResult = {
   details?: string;
 };
 
-// Base URL for models - using a more reliable GitHub CDN
 const MODEL_URL = 'https://vladmandic.github.io/face-api/model';
 
-// Path to models directory
 const modelsPath = path.join(__dirname, '../../models');
 
-// Model versions that we're trying to load
 const MODEL_VERSION = {
   VLADMANDIC: 'vladmandic',
   JUSTADUDEWHOHACKS: 'justadudewhohacks',
 } as const;
 
-/**
- * Definition of models for download
- */
 const MODELS = [
   'ssd_mobilenetv1_model-weights_manifest.json',
   'ssd_mobilenetv1_model.bin',
@@ -57,7 +44,6 @@ const MODELS = [
   'face_recognition_model.bin'
 ] as const;
 
-// For backward compatibility with justadudewhohacks models if needed
 const ALTERNATIVE_MODELS = [
   'ssd_mobilenetv1_model-weights_manifest.json',
   'ssd_mobilenetv1_model.bin',
@@ -67,9 +53,6 @@ const ALTERNATIVE_MODELS = [
   'face_recognition_model.bin'
 ] as const;
 
-/**
- * Downloads a file from a URL to a local path with better error handling
- */
 export const downloadFile = async (url: string, filePath: string): Promise<void> => {
   const directory = dirname(filePath);
 
@@ -83,7 +66,7 @@ export const downloadFile = async (url: string, filePath: string): Promise<void>
         'User-Agent': 'node-fetch/1.0',
         'Accept': 'application/json, application/octet-stream, */*'
       },
-      timeout: 30000 // 30 second timeout
+      timeout: 30000
     };
 
     const file = fs.createWriteStream(filePath);
@@ -95,7 +78,6 @@ export const downloadFile = async (url: string, filePath: string): Promise<void>
     });
 
     const req = https.get(url, options, (response: IncomingMessage) => {
-      // Follow redirects manually
       if (response.statusCode === 301 || response.statusCode === 302) {
         file.close();
         if (response.headers.location) {
@@ -117,7 +99,6 @@ export const downloadFile = async (url: string, filePath: string): Promise<void>
         return;
       }
 
-      // Check content-type for JSON files to ensure we're getting the right type
       if (filePath.endsWith('.json') &&
           response.headers['content-type'] &&
           !String(response.headers['content-type']).includes('application/json') &&
@@ -147,14 +128,13 @@ export const downloadFile = async (url: string, filePath: string): Promise<void>
     file.on('finish', () => {
       file.close();
 
-      // Additional validation for JSON files
       if (filePath.endsWith('.json')) {
         try {
           const content = fs.readFileSync(filePath, 'utf8');
           if (content.trim() === '') {
             throw new Error('Empty JSON file');
           }
-          JSON.parse(content); // Will throw if invalid JSON
+          JSON.parse(content);
           resolve();
         } catch (error: unknown) {
           fs.unlink(filePath, () => {});
@@ -167,9 +147,6 @@ export const downloadFile = async (url: string, filePath: string): Promise<void>
   });
 };
 
-/**
- * Checks if all required models are available locally
- */
 export const areModelsAvailable = (): ModelsAvailableResult => {
   const missingModels: ModelName[] = [];
 
@@ -178,13 +155,11 @@ export const areModelsAvailable = (): ModelsAvailableResult => {
     if (!fs.existsSync(modelPath)) {
       missingModels.push(model);
     } else {
-      // Validate JSON files
       if (model.endsWith('.json')) {
         try {
           const content = fs.readFileSync(modelPath, 'utf8');
-          JSON.parse(content); // Will throw if invalid JSON
+          JSON.parse(content);
         } catch (error) {
-          // JSON is invalid, consider model missing
           missingModels.push(model);
         }
       }
@@ -197,11 +172,7 @@ export const areModelsAvailable = (): ModelsAvailableResult => {
   };
 };
 
-/**
- * Downloads all necessary models with detailed error reporting
- */
 export const downloadModels = async (): Promise<DownloadResult[]> => {
-  // Ensure models directory exists
   if (!fs.existsSync(modelsPath)) {
     fs.mkdirSync(modelsPath, { recursive: true });
   }
@@ -210,17 +181,14 @@ export const downloadModels = async (): Promise<DownloadResult[]> => {
 
   const results: DownloadResult[] = [];
 
-  // Download each model
   for (const model of MODELS) {
     const modelPath = path.join(modelsPath, model);
 
-    // Skip if the model already exists and is valid
     if (fs.existsSync(modelPath)) {
-      // For JSON files, validate content
       if (model.endsWith('.json')) {
         try {
           const content = fs.readFileSync(modelPath, 'utf8');
-          JSON.parse(content); // Will throw if invalid JSON
+          JSON.parse(content);
           console.log(`Model ${model} already exists and is valid, skipping.`);
           results.push({ success: true, modelName: model });
           continue;
@@ -233,7 +201,6 @@ export const downloadModels = async (): Promise<DownloadResult[]> => {
           }
         }
       } else {
-        // For binary files, just check if they exist
         console.log(`Model ${model} already exists, skipping.`);
         results.push({ success: true, modelName: model });
         continue;
@@ -260,12 +227,8 @@ export const downloadModels = async (): Promise<DownloadResult[]> => {
   return results;
 };
 
-/**
- * Sets up node-canvas for face-api.js in Node environment
- */
 const setupNodeCanvas = (): void => {
   try {
-    // Use our centralized canvas setup utility
     setupCanvas();
     console.log('Node canvas setup complete');
   } catch (error) {
@@ -274,17 +237,12 @@ const setupNodeCanvas = (): void => {
   }
 };
 
-/**
- * Loads face-api.js models with comprehensive error handling
- */
 export const loadModels = async (): Promise<LoadModelsResult> => {
   try {
     console.log('Loading face-api.js models...');
 
-    // Setup node-canvas first
     setupNodeCanvas();
 
-    // Try loading from disk first
     try {
       console.log('Attempting to load models from disk...');
 
@@ -297,7 +255,6 @@ export const loadModels = async (): Promise<LoadModelsResult> => {
       await faceapi.nets.faceRecognitionNet.loadFromDisk(modelsPath);
       console.log('Face recognition model loaded');
 
-      // Verify models are loaded
       if (!faceapi.nets.ssdMobilenetv1.isLoaded ||
           !faceapi.nets.faceLandmark68Net.isLoaded ||
           !faceapi.nets.faceRecognitionNet.isLoaded) {
@@ -310,9 +267,7 @@ export const loadModels = async (): Promise<LoadModelsResult> => {
       console.warn(`Loading from disk failed: ${diskError instanceof Error ? diskError.message : String(diskError)}`);
       console.log('Attempting to load models from web...');
 
-      // Try loading from web as fallback using the CDN URL
       try {
-        // Cannot directly modify isLoaded properties, so we'll reinitialize the nets
         console.log('Reinitializing models before loading from web...');
 
         await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
@@ -324,7 +279,6 @@ export const loadModels = async (): Promise<LoadModelsResult> => {
         await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
         console.log('Face recognition model loaded from web');
 
-        // Verify models are loaded
         if (!faceapi.nets.ssdMobilenetv1.isLoaded ||
             !faceapi.nets.faceLandmark68Net.isLoaded ||
             !faceapi.nets.faceRecognitionNet.isLoaded) {
@@ -333,7 +287,6 @@ export const loadModels = async (): Promise<LoadModelsResult> => {
 
         console.log('All models loaded successfully from web.');
 
-        // Save the models to disk for future use
         try {
           console.log('Attempting to download models for future use...');
           await downloadModels();

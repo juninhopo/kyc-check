@@ -6,42 +6,52 @@
     <title>Validador Facial KYC</title>
     <link href="/css/tailwind.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Adicionar script da biblioteca Lottie -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.9.6/lottie.min.js"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-primary-950 dark:to-primary-900 text-primary-800 dark:text-gray-100 font-sans flex items-center justify-center">
 
 
     <div class="container max-w-4xl mx-auto px-4 py-8">
         <div class="bg-white dark:bg-primary-900 rounded-xl shadow-card p-8 mb-8">
-            <div class="flex items-center justify-center mb-8">
-                <img src="kyc-icon.png" alt="KYC Icon" class="h-10 w-10 mr-3">
-                <h1 class="text-3xl md:text-4xl font-bold font-display text-primary-800 dark:text-gray-100">Validador Facial KYC</h1>
+            <div class="flex flex-col gap-4 items-center justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    <img src="kyc-icon.png" alt="KYC Icon" class="h-10 w-10 mr-3">
+                    <h1 class="text-3xl md:text-4xl font-bold font-display text-primary-800 dark:text-gray-100">KYC Check</h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="pt-br" class="lang-button language-active">
+                        <img src="https://flagcdn.com/w40/br.png" alt="Português" class="flag-icon">
+                        <span>PT</span>
+                    </button>
+                    <button id="en-us" class="lang-button opacity-50">
+                        <img src="https://flagcdn.com/w40/us.png" alt="English" class="flag-icon">
+                        <span>EN</span>
+                    </button>
+                </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6 mb-8">
                 <div class="card dark:card-dark p-4">
-                    <label for="image1" class="block text-primary-700 dark:text-gray-300 font-medium mb-2">Imagem da Pessoa 1</label>
+                    <label for="image1" class="block text-primary-700 dark:text-gray-300 font-medium mb-2" data-lang-pt="Imagem da Pessoa 1" data-lang-en="Person 1 Image">Imagem da Pessoa 1</label>
                     <div class="relative">
                         <input type="file" id="image1" accept="image/*" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
                         <div class="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-lg p-4 text-center flex flex-col items-center justify-center h-32 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
                             <svg class="w-8 h-8 text-primary-400 dark:text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            <span class="text-sm text-primary-500 dark:text-primary-400">Clique ou arraste uma imagem</span>
+                            <span class="text-sm text-primary-500 dark:text-primary-400" data-lang-pt="Clique ou arraste uma imagem" data-lang-en="Click or drag an image">Clique ou arraste uma imagem</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="card dark:card-dark p-4">
-                    <label for="image2" class="block text-primary-700 dark:text-gray-300 font-medium mb-2">Imagem da Pessoa 2</label>
+                    <label for="image2" class="block text-primary-700 dark:text-gray-300 font-medium mb-2" data-lang-pt="Imagem da Pessoa 2" data-lang-en="Person 2 Image">Imagem da Pessoa 2</label>
                     <div class="relative">
                         <input type="file" id="image2" accept="image/*" class="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10">
                         <div class="border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-lg p-4 text-center flex flex-col items-center justify-center h-32 hover:border-accent-400 dark:hover:border-accent-600 transition-colors">
                             <svg class="w-8 h-8 text-primary-400 dark:text-primary-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
-                            <span class="text-sm text-primary-500 dark:text-primary-400">Clique ou arraste uma imagem</span>
+                            <span class="text-sm text-primary-500 dark:text-primary-400" data-lang-pt="Clique ou arraste uma imagem" data-lang-en="Click or drag an image">Clique ou arraste uma imagem</span>
                         </div>
                     </div>
                 </div>
@@ -50,13 +60,13 @@
             <div class="grid md:grid-cols-2 gap-6 mb-8">
                 <div class="preview-container card dark:card-dark p-4 flex items-center justify-center h-64">
                     <div id="preview1" class="w-full h-full flex items-center justify-center">
-                        <span class="text-primary-500 dark:text-primary-400">Prévia 1</span>
+                        <span class="text-primary-500 dark:text-primary-400" data-lang-pt="Prévia 1" data-lang-en="Preview 1">Prévia 1</span>
                     </div>
                 </div>
 
                 <div class="preview-container card dark:card-dark p-4 flex items-center justify-center h-64">
                     <div id="preview2" class="w-full h-full flex items-center justify-center">
-                        <span class="text-primary-500 dark:text-primary-400">Prévia 2</span>
+                        <span class="text-primary-500 dark:text-primary-400" data-lang-pt="Prévia 2" data-lang-en="Preview 2">Prévia 2</span>
                     </div>
                 </div>
             </div>
@@ -66,13 +76,13 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                     </svg>
-                    Comparar Faces
+                    <span data-lang-pt="Comparar Faces" data-lang-en="Compare Faces">Comparar Faces</span>
                 </button>
             </div>
 
             <div id="loading" class="loading hidden flex flex-col justify-center items-center my-6">
-                <div id="lottie-animation" class="w-48 h-48"></div>
-                <span class="text-primary-600 dark:text-primary-400 mt-2">Processando, por favor aguarde...</span>
+                <div class="spinner mb-4"></div>
+                <span class="text-primary-600 dark:text-primary-400 mt-2" data-lang-pt="Processando, por favor aguarde..." data-lang-en="Processing, please wait...">Processando, por favor aguarde...</span>
             </div>
 
             <div id="result" class="hidden rounded-md p-4 text-center font-bold text-lg"></div>
@@ -80,14 +90,14 @@
 
         <div class="text-center mt-6">
             <button id="toggleDebug" class="btn bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 border border-primary-200 dark:border-primary-700 rounded-md py-2 px-4 text-sm shadow-subtle hover:bg-gray-50 dark:hover:bg-primary-700">
-                Mostrar Informações de Debug
+                <span data-lang-pt="Mostrar Informações de Debug" data-lang-en="Show Debug Information">Mostrar Informações de Debug</span>
             </button>
         </div>
 
         <div id="debug-section" class="bg-white dark:bg-primary-900 rounded-lg shadow-card border border-gray-200 dark:border-primary-800 mt-6 p-6 hidden">
-            <h3 class="text-xl font-semibold font-display text-primary-700 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-primary-800 pb-2">Informações de Debug</h3>
+            <h3 class="text-xl font-semibold font-display text-primary-700 dark:text-gray-200 mb-4 border-b border-gray-200 dark:border-primary-800 pb-2" data-lang-pt="Informações de Debug" data-lang-en="Debug Information">Informações de Debug</h3>
             <div id="debug-info" class="bg-gray-50 dark:bg-primary-800 text-primary-800 dark:text-gray-300 font-mono text-sm p-4 rounded-md overflow-auto max-h-96 border border-gray-200 dark:border-primary-700">
-                Nenhuma informação disponível.
+                <span data-lang-pt="Nenhuma informação disponível." data-lang-en="No information available.">Nenhuma informação disponível.</span>
             </div>
         </div>
     </div>
@@ -105,78 +115,110 @@
             const debugSection = document.getElementById('debug-section');
             const debugInfo = document.getElementById('debug-info');
 
-            // Verificar se a biblioteca Lottie foi carregada corretamente
-            if (typeof lottie === 'undefined') {
-                console.error('Biblioteca Lottie não foi carregada corretamente');
-                return;
-            }
+            // Language selectors
+            const ptBrButton = document.getElementById('pt-br');
+            const enUsButton = document.getElementById('en-us');
 
-            console.log('Inicializando animação Lottie...');
+            // Language management
+            let currentLanguage = 'pt';
 
-            // Inicializar a animação Lottie
-            let faceRecognitionAnimation;
-            const lottieContainer = document.getElementById('lottie-animation');
+            const translations = {
+                'face-match': {
+                    'pt': 'As faces correspondem! Similaridade: {similarity}%',
+                    'en': 'Faces match! Similarity: {similarity}%'
+                },
+                'face-no-match': {
+                    'pt': 'As faces não correspondem. Similaridade: {similarity}%',
+                    'en': 'Faces don\'t match. Similarity: {similarity}%'
+                },
+                'select-images': {
+                    'pt': 'Por favor, selecione duas imagens.',
+                    'en': 'Please select two images.'
+                },
+                'processing-error': {
+                    'pt': 'Erro ao processar requisição: {error}',
+                    'en': 'Error processing request: {error}'
+                },
+                'show-debug': {
+                    'pt': 'Mostrar Informações de Debug',
+                    'en': 'Show Debug Information'
+                },
+                'hide-debug': {
+                    'pt': 'Ocultar Informações de Debug',
+                    'en': 'Hide Debug Information'
+                },
+                'no-info': {
+                    'pt': 'Nenhuma informação disponível.',
+                    'en': 'No information available.'
+                }
+            };
 
-            // Verificar se o contêiner existe
-            if (!lottieContainer) {
-                console.error('Contêiner da animação Lottie não encontrado');
-                return;
-            }
+            // Function to translate UI
+            const changeLanguage = (lang) => {
+                currentLanguage = lang;
+                document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en-US';
 
-            try {
-                // Pré-carregar o arquivo JSON da animação para garantir que está válido
-                fetch('./face-recognition.json')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`Erro ao carregar arquivo de animação: ${response.statusText}`);
-                        }
-                        return response.json();
-                    })
-                    .then(animationData => {
-                        // Carrega a animação usando os dados pré-carregados, não o caminho
-                        faceRecognitionAnimation = lottie.loadAnimation({
-                            container: lottieContainer,
-                            renderer: 'svg',
-                            loop: true,
-                            autoplay: false,
-                            animationData: animationData // Usa os dados JSON já carregados
-                        });
+                // Update language button states
+                if (lang === 'pt') {
+                    ptBrButton.classList.add('language-active');
+                    ptBrButton.classList.remove('opacity-50');
+                    enUsButton.classList.remove('language-active');
+                    enUsButton.classList.add('opacity-50');
+                } else {
+                    enUsButton.classList.add('language-active');
+                    enUsButton.classList.remove('opacity-50');
+                    ptBrButton.classList.remove('language-active');
+                    ptBrButton.classList.add('opacity-50');
+                }
 
-                        console.log('Animação Lottie carregada com sucesso');
+                // Update all translatable elements
+                document.querySelectorAll('[data-lang-pt][data-lang-en]').forEach(element => {
+                    element.textContent = element.getAttribute(lang === 'pt' ? 'data-lang-pt' : 'data-lang-en');
+                });
 
-                        faceRecognitionAnimation.addEventListener('DOMLoaded', () => {
-                            console.log('DOM da animação Lottie carregado com sucesso');
+                // Update toggle debug button text based on current state
+                const isDebugVisible = !debugSection.classList.contains('hidden');
+                toggleDebugButton.querySelector('span').textContent = isDebugVisible
+                    ? translations[lang === 'pt' ? 'hide-debug' : 'show-debug'][lang]
+                    : translations[lang === 'pt' ? 'show-debug' : 'hide-debug'][lang];
 
-                            // Testar a animação brevemente para verificar se está funcionando
-                            loadingDiv.classList.remove('hidden');
-                            faceRecognitionAnimation.play();
+                // Update document title
+                document.title = lang === 'pt' ? 'Validador Facial KYC' : 'KYC Facial Validator';
 
-                            setTimeout(() => {
-                                faceRecognitionAnimation.stop();
-                                loadingDiv.classList.add('hidden');
-                            }, 500);
-                        });
+                // If there's a result showing, update it with translated text
+                if (!resultDiv.classList.contains('hidden')) {
+                    updateResultWithTranslation();
+                }
+            };
 
-                        faceRecognitionAnimation.addEventListener('error', (error) => {
-                            console.error('Erro na animação Lottie:', error);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Erro ao carregar o arquivo de animação:', error);
-                    });
-            } catch (error) {
-                console.error('Erro ao inicializar a animação Lottie:', error);
-            }
+            // Function to update result text with proper translation
+            const updateResultWithTranslation = () => {
+                // Extract similarity percentage if available
+                const similarityMatch = resultDiv.textContent.match(/(\d+)%/);
+                if (!similarityMatch) return;
+
+                const similarity = similarityMatch[1];
+                const isMatch = resultDiv.classList.contains('bg-green-50') ||
+                                resultDiv.classList.contains('dark:bg-green-900/30');
+
+                const translationKey = isMatch ? 'face-match' : 'face-no-match';
+                resultDiv.textContent = translations[translationKey][currentLanguage]
+                    .replace('{similarity}', similarity);
+            };
+
+            // Language button click handlers
+            ptBrButton.addEventListener('click', () => changeLanguage('pt'));
+            enUsButton.addEventListener('click', () => changeLanguage('en'));
 
             // Toggle debug section
             toggleDebugButton.addEventListener('click', () => {
                 const isVisible = debugSection.classList.contains('hidden');
                 if (isVisible) {
                     debugSection.classList.remove('hidden');
-                    toggleDebugButton.textContent = 'Ocultar Informações de Debug';
+                    toggleDebugButton.querySelector('span').textContent = translations[currentLanguage === 'pt' ? 'hide-debug' : 'show-debug'][currentLanguage];
                 } else {
                     debugSection.classList.add('hidden');
-                    toggleDebugButton.textContent = 'Mostrar Informações de Debug';
+                    toggleDebugButton.querySelector('span').textContent = translations[currentLanguage === 'pt' ? 'show-debug' : 'hide-debug'][currentLanguage];
                 }
             });
 
@@ -224,7 +266,7 @@
 
             // Format debug information
             const formatDebugInfo = (debugInfo) => {
-                if (!debugInfo) return 'Nenhuma informação disponível.';
+                if (!debugInfo) return translations['no-info'][currentLanguage];
 
                 return JSON.stringify(debugInfo, null, 2);
             };
@@ -232,7 +274,7 @@
             // Handle compare button click
             compareButton.addEventListener('click', async () => {
                 if (!image1Input.files[0] || !image2Input.files[0]) {
-                    resultDiv.textContent = 'Por favor, selecione duas imagens.';
+                    resultDiv.textContent = translations['select-images'][currentLanguage];
                     resultDiv.className = 'bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 text-yellow-700 dark:text-yellow-200 p-4 rounded-md mt-4';
                     resultDiv.classList.remove('hidden');
                     return;
@@ -242,15 +284,6 @@
                 resultDiv.textContent = '';
                 resultDiv.className = 'hidden';
                 loadingDiv.classList.remove('hidden');
-
-                // Iniciar animação e verificar se está funcionando
-                if (faceRecognitionAnimation) {
-                    console.log('Iniciando animação Lottie...');
-                    faceRecognitionAnimation.goToAndPlay(0, true);
-                } else {
-                    console.error('A animação Lottie não foi inicializada corretamente');
-                }
-
                 compareButton.disabled = true;
 
                 try {
@@ -260,6 +293,9 @@
 
                     const response = await fetch('/api/validate-faces', {
                         method: 'POST',
+                        headers: {
+                            'Accept-Language': currentLanguage === 'pt' ? 'pt-BR' : 'en-US'
+                        },
                         body: formData
                     });
 
@@ -270,10 +306,10 @@
                         const similarityPercent = Math.round(similarity * 100);
 
                         if (isMatch) {
-                            resultDiv.textContent = `As faces correspondem! Similaridade: ${similarityPercent}%`;
+                            resultDiv.textContent = translations['face-match'][currentLanguage].replace('{similarity}', similarityPercent);
                             resultDiv.className = 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-200 p-4 rounded-md mt-4';
                         } else {
-                            resultDiv.textContent = `As faces não correspondem. Similaridade: ${similarityPercent}%`;
+                            resultDiv.textContent = translations['face-no-match'][currentLanguage].replace('{similarity}', similarityPercent);
                             resultDiv.className = 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 p-4 rounded-md mt-4';
                         }
 
@@ -286,17 +322,11 @@
                         resultDiv.classList.remove('hidden');
                     }
                 } catch (error) {
-                    resultDiv.textContent = `Erro ao processar requisição: ${error.message}`;
+                    resultDiv.textContent = translations['processing-error'][currentLanguage].replace('{error}', error.message);
                     resultDiv.className = 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-200 p-4 rounded-md mt-4';
                     resultDiv.classList.remove('hidden');
                 } finally {
                     loadingDiv.classList.add('hidden');
-
-                    // Parar a animação se ela foi inicializada corretamente
-                    if (faceRecognitionAnimation) {
-                        faceRecognitionAnimation.stop();
-                    }
-
                     compareButton.disabled = false;
                 }
             });
