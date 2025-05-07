@@ -1,8 +1,6 @@
 import util from 'util';
-// @ts-ignore - Adding polyfill for deprecated function
 if (!util.isNullOrUndefined) {
-  // @ts-ignore - Ignoring type check for polyfill
-  util.isNullOrUndefined = (arg: unknown): boolean => arg === null || arg === undefined;
+  util.isNullOrUndefined = (arg: unknown): arg is null | undefined => arg === null || arg === undefined;
 }
 
 import '@tensorflow/tfjs-node';
@@ -19,6 +17,18 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 setupCanvas();
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(express.static(path.join(__dirname, '../public')));
 

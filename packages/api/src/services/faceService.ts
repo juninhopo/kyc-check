@@ -14,7 +14,6 @@ const config = {
   similarityThreshold: process.env.API_THRESHOLD ? parseFloat(process.env.API_THRESHOLD) : 0.75,
 };
 
-
 const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
   try {
     const tensor = tf.node.decodeImage(buffer);
@@ -91,7 +90,6 @@ const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.C
     throw new Error(`Failed to load image: ${errorMessage}`);
   }
 };
-
 
 const areAllModelsLoaded = (): boolean => {
   return isModelLoaded.ssdMobilenetv1 &&
@@ -231,8 +229,6 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
   }
 };
 
-/**
- */
 const useMockImplementation = (image1Path: string, image2Path: string): ValidationResult => {
   console.log('Using mock implementation for face comparison');
 

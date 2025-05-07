@@ -7,10 +7,8 @@ import { MoonIcon, SunIcon } from '@/components/icons/ThemeIcons';
 import './KYCValidator.css';
 
 export default function KYCValidator() {
-  // Acesso ao ThemeContext (em vez de usar o hook useTheme diretamente)
   const themeContext = useContext(ThemeContext);
 
-  // Estados iniciais
   const [localTheme, setLocalTheme] = useState<string>('light');
   const [image1, setImage1] = useState<File | null>(null);
   const [image2, setImage2] = useState<File | null>(null);
@@ -23,11 +21,9 @@ export default function KYCValidator() {
   const [currentLang, setCurrentLang] = useState('pt-br');
   const [isMounted, setIsMounted] = useState(false);
 
-  // Efeito para inicialização e sincronização do tema
   useEffect(() => {
     setIsMounted(true);
 
-    // Configura um tema padrão baseado nas preferências do usuário quando o ThemeContext não está disponível
     if (!themeContext) {
       try {
         const storedTheme = localStorage?.getItem('theme');
@@ -35,7 +31,6 @@ export default function KYCValidator() {
         const initialTheme = storedTheme || (prefersDark ? 'dark' : 'light');
         setLocalTheme(initialTheme);
 
-        // Aplica o tema ao documento
         if (initialTheme === 'dark') {
           document.documentElement.classList.add('dark');
           document.body.classList.add('dark');
@@ -44,10 +39,8 @@ export default function KYCValidator() {
           document.body.classList.remove('dark');
         }
       } catch (e) {
-        // Ignora erros durante SSR
       }
     } else {
-      // Usa o tema do contexto quando disponível
       setLocalTheme(themeContext.theme);
 
       if (themeContext.theme === 'dark') {
@@ -58,15 +51,12 @@ export default function KYCValidator() {
     }
   }, [themeContext]);
 
-  // Função para alternar o tema
   const handleThemeToggle = () => {
     const newTheme = localTheme === 'dark' ? 'light' : 'dark';
 
-    // Usa o setTheme do contexto quando disponível
     if (themeContext) {
       themeContext.setTheme(newTheme);
     } else {
-      // Fallback para gerenciamento local
       setLocalTheme(newTheme);
       localStorage.setItem('theme', newTheme);
 
@@ -133,7 +123,6 @@ export default function KYCValidator() {
   const switchLanguage = (lang: string) => {
     setCurrentLang(lang);
 
-    // Implementação simplificada de internacionalização
     if (isMounted) {
       const elements = document.querySelectorAll('[data-lang-pt], [data-lang-en]');
       elements.forEach(el => {
@@ -147,7 +136,6 @@ export default function KYCValidator() {
     }
   };
 
-  // Renderização condicional para SSR
   if (!isMounted) {
     return (
       <div className="container max-w-4xl mx-auto px-4 py-8">
@@ -167,7 +155,6 @@ export default function KYCValidator() {
     );
   }
 
-  // Tema atual - do contexto se disponível, ou do estado local como fallback
   const currentTheme = themeContext?.theme || localTheme;
 
   return (
@@ -355,7 +342,7 @@ export default function KYCValidator() {
       <div className="text-center mt-4 sm:mt-6">
         <button
           onClick={toggleDebug}
-          className="kyc-debug-btn rounded-md py-1 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm"
+          className="kyc-debug-btn rounded-md py-1 sm:py-2 px-3 sm:px-4 text-xs sm:text-sm  "
         >
           <span
             data-lang-pt="Mostrar Informações de Debug"

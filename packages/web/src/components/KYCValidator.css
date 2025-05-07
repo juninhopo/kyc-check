@@ -1,4 +1,4 @@
-/* Variáveis de cores para modos claro e escuro */
+
 :root {
   --dark-bg: #1a1f2e;
   --dark-card: #252b3b;
@@ -6,32 +6,34 @@
   --light-bg: #f8fafc;
   --light-card: #ffffff;
   --light-border: #e2e8f0;
+  --light-text: #1a202c;
+  --dark-text: #e2e8f0;
 }
 
-/* Estilos básicos para o corpo */
 body.dark {
   background: linear-gradient(to bottom right, #1a1f2e, #131825);
+  color: var(--dark-text);
 }
 
 body {
   background: linear-gradient(to bottom right, #f0f4f8, #dbe7f3);
+  color: var(--light-text);
 }
 
-/* Estilos para cartões */
 .kyc-card {
   background-color: var(--light-card);
   border: 1px solid var(--light-border);
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  color: var(--light-text);
 }
 
 .dark .kyc-card {
   background-color: var(--dark-card);
   border-color: var(--dark-border);
-  color: #e2e8f0;
+  color: var(--dark-text);
 }
 
-/* Estilos para área de upload */
 .kyc-upload-area {
   border: 2px dashed #cbd5e1;
   transition: all 0.2s ease-in-out;
@@ -49,7 +51,6 @@ body {
   border-color: #3b82f6;
 }
 
-/* Estilos para área de preview */
 .kyc-preview {
   background-color: var(--light-card);
   border: 1px solid var(--light-border);
@@ -61,7 +62,6 @@ body {
   border-color: var(--dark-border);
 }
 
-/* Botão de comparação */
 .kyc-compare-btn {
   background-color: #0284c7;
   color: white;
@@ -80,7 +80,6 @@ body {
   background-color: #075985;
 }
 
-/* Botão de depuração */
 .kyc-debug-btn {
   background-color: transparent;
   border: 1px solid var(--light-border);
@@ -92,7 +91,6 @@ body {
   color: #38bdf8;
 }
 
-/* Spinner de carregamento */
 .kyc-spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
   width: 36px;
@@ -112,14 +110,12 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Estilo para ícones de bandeira */
 .kyc-flag-icon {
   width: 20px;
   height: 14px;
   border-radius: 2px;
 }
 
-/* Estilo para botão de idioma */
 .kyc-lang-active {
   color: #0284c7;
   font-weight: 600;

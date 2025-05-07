@@ -1,30 +1,20 @@
-// Constante com a URL base da API
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-// Interface para o resultado da validação facial
 export interface ValidationResult {
   isMatch: boolean;
   similarity: number;
-  message: string;
+  message?: string;
+  debugInfo?: any;
 }
 
-// Serviço para validação facial
 export const faceValidationService = {
-  /**
-   * Valida duas imagens faciais
-   * @param referenceImage - Imagem de referência (documento)
-   * @param selfieImage - Selfie para comparação
-   * @returns Resultado da validação
-   */
   async validateFaces(referenceImage: File, selfieImage: File): Promise<ValidationResult> {
     try {
-      // Cria um FormData para enviar os arquivos
       const formData = new FormData();
-      formData.append('reference', referenceImage);
-      formData.append('selfie', selfieImage);
+      formData.append('image1', referenceImage);
+      formData.append('image2', selfieImage);
 
-      // Faz a requisição para a API
-      const response = await fetch(`${API_URL}/validate-faces`, {
+      const response = await fetch(`${API_URL}/api/validate-faces`, {
         method: 'POST',
         body: formData,
       });
@@ -33,7 +23,24 @@ export const faceValidationService = {
         throw new Error(`Erro na validação: ${response.status}`);
       }
 
-      return await response.json();
+      const responseData = await response.json();
+
+      if (responseData.success === true && responseData.data) {
+        return {
+          isMatch: responseData.data.isMatch,
+          similarity: responseData.data.similarity,
+          debugInfo: responseData.data.debugInfo,
+          message: responseData.data.isMatch ? 'Faces correspondem!' : 'Faces não correspondem.'
+        };
+      } else if (responseData.success === false) {
+        return {
+          isMatch: false,
+          similarity: 0,
+          message: responseData.error || 'Erro na validação facial.'
+        };
+      } else {
+        return responseData;
+      }
     } catch (error) {
       console.error('Erro ao validar faces:', error);
       return {
