@@ -68,15 +68,13 @@ API_THRESHOLD=0.50
 ## 💻 Usage
 
 ```bash
-# Start the development server with Tailwind CSS watching
-pnpm run dev:full
 
 # OR start only the development server (without Tailwind watching)
-pnpm run dev
+pnpm dev
 
 # Build for production
-pnpm run build
-pnpm run build:css
+pnpm build
+pnpm build:css
 
 # Start production server
 pnpm start
@@ -90,13 +88,13 @@ This project uses Tailwind CSS for styling. Here are the available commands for 
 
 ```bash
 # Build Tailwind CSS once
-pnpm run build:css
+pnpm build:css
 
 # Watch for changes and rebuild Tailwind CSS automatically
-pnpm run watch:css
+pnpm watch:css
 
 # Start development server with Tailwind CSS watching (recommended for development)
-pnpm run dev:full
+pnpm dev:full
 ```
 
 ### Custom Tailwind Components
