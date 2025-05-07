@@ -12,8 +12,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const ptBrButton = document.getElementById('pt-br');
     const enUsButton = document.getElementById('en-us');
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
 
     let currentLanguage = 'pt';
+
+    // Configuração do tema (dark/light)
+    const setupTheme = () => {
+        // Verifica o tema atual e exibe o ícone apropriado
+        if (document.documentElement.classList.contains('dark')) {
+            themeToggleLightIcon.classList.remove('hidden');
+            themeToggleDarkIcon.classList.add('hidden');
+        } else {
+            themeToggleDarkIcon.classList.remove('hidden');
+            themeToggleLightIcon.classList.add('hidden');
+        }
+    };
+
+    // Inicializa o tema
+    setupTheme();
+
+    // Função para alternar o tema
+    const toggleTheme = () => {
+        // Alterna a classe dark no elemento HTML
+        document.documentElement.classList.toggle('dark');
+
+        // Alterna os ícones
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+
+        // Salva a preferência no localStorage
+        localStorage.setItem('color-theme',
+            document.documentElement.classList.contains('dark')
+                ? 'dark'
+                : 'light'
+        );
+    };
+
+    // Event listener para o botão de alternar o tema
+    themeToggleButton.addEventListener('click', toggleTheme);
 
     const translations = {
         'face-match': {
