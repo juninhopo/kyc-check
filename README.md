@@ -9,7 +9,6 @@ You can use documents such as a driver's license to verify if it matches the pho
   - [📋 Table of Contents](#-table-of-contents)
   - [✨ Features](#-features)
   - [📚 Articles](#-articles)
-  - [🌐 Live Demo](#-live-demo)
   - [🚀 Installation](#-installation)
   - [⚙️ Environment Setup](#️-environment-setup)
   - [💻 Usage](#-usage)
@@ -42,9 +41,6 @@ You can use documents such as a driver's license to verify if it matches the pho
 
 - [Basic KYC Implementation Guide using KYC_CHECK](https://dev.to/juninhopo/basic-kyc-implementation-guide-using-kyccheck-3fld) - A practical guide on how to implement and use the KYC_CHECK library in your projects.
 
-## 🌐 Live Demo
-
-A live demo is available at: [https://kyc-check-production.up.railway.app/](https://kyc-check-production.up.railway.app/)
 
 ## 🚀 Installation
 
