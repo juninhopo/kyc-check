@@ -874,6 +874,10 @@ video {
   overflow: auto;
 }
 
+.whitespace-pre-wrap {
+  white-space: pre-wrap;
+}
+
 .rounded-lg {
   border-radius: 0.5rem;
 }
@@ -1153,6 +1157,50 @@ video {
   margin-right: 8px;
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.json-key {
+  color: #5b8ab5;
+}
+
+.json-string {
+  color: #82a53d;
+}
+
+.json-number {
+  color: #d18f52;
+}
+
+.json-boolean {
+  color: #9474b9;
+}
+
+.json-null {
+  color: #d18f52;
+}
+
+.dark .json-key {
+  color: #88b5d5;
+}
+
+.dark .json-string {
+  color: #b1d16f;
+}
+
+.dark .json-number {
+  color: #f9ae74;
+}
+
+.dark .json-boolean {
+  color: #c49df3;
+}
+
+.dark .json-null {
+  color: #f9ae74;
+}
+
+.json-formatter {
+  white-space: pre-wrap;
 }
 
 @media (prefers-color-scheme: dark) {

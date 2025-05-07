@@ -9,7 +9,6 @@ import os from 'os';
 
 const router: Router = express.Router();
 
-// Traduções para mensagens de erro
 const errorMessages = {
   'pt': {
     'facesNotDetected': 'Faces não detectados em uma ou ambas as imagens. Por favor, utilize imagens com rostos claramente visíveis.',
@@ -35,18 +34,15 @@ router.post('/',
   ]),
   async (req: Request, res: Response) => {
     const tempFiles: string[] = [];
-    // Verificar idioma da requisição (padrão é português)
     const lang = req.headers['accept-language']?.includes('en') ? 'en' : 'pt';
 
     try {
-      // Verificar se existem arquivos enviados
       if (!req.files || Array.isArray(req.files)) {
         throw new Error('No files uploaded');
       }
 
       const fileFields = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-      // Verificar se as duas imagens foram enviadas
       if (!fileFields.image1 || !fileFields.image2 ||
           !fileFields.image1[0] || !fileFields.image2[0]) {
         throw new Error('Missing required image files');
@@ -55,17 +51,14 @@ router.post('/',
       const image1 = fileFields.image1[0];
       const image2 = fileFields.image2[0];
 
-      // Salvar os buffers como arquivos temporários
       const image1Path = saveBufferToTempFile(image1.buffer, path.extname(image1.originalname));
       const image2Path = saveBufferToTempFile(image2.buffer, path.extname(image2.originalname));
 
       tempFiles.push(image1Path, image2Path);
 
       try {
-        // Comparar faces
         const result = await compareFaces(image1Path, image2Path);
 
-        // Limpar arquivos temporários
         cleanupFiles(tempFiles);
 
         return res.json({
