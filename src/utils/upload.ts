@@ -5,9 +5,9 @@ import { fileTypeFromBuffer } from 'file-type';
 import { cleanupFiles } from './imageUtils';
 
 export const upload = multer({
-  storage: multer.memoryStorage(), // Usar armazenamento em memória em vez de disco
+  storage: multer.memoryStorage(),
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 10 * 1024 * 1024,
   },
   fileFilter: async (_req, file, cb) => {
     try {
