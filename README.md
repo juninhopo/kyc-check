@@ -236,6 +236,9 @@ kyc-check/
 ## 🙏 Credits
 
 - Icon designed by [Eric Viana](https://github.com/ericviana)
+- This project is based on the original [KYC-CHECK](https://github.com/juninhopo/kyc-check) by [juninhopo](https://github.com/juninhopo)
+- Special thanks to the developers of [face-api.js](https://github.com/justadudewhohacks/face-api.js) and its Node.js port by [@vladmandic](https://github.com/vladmandic/face-api)
+- Interface redesigned with Next.js and TailwindCSS for improved usability and performance
 
 ## 🤝 Contributing
 
