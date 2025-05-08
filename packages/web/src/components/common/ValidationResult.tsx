@@ -48,7 +48,7 @@ export function ValidationResult({ result, loading }: ValidationResultProps) {
               : 'bg-red-50 dark:bg-red-900/30'
           }`}
         >
-          <div className="flex items-center">
+          <div className="flex items-center justify-center">
             <div
               className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
                 result.isMatch

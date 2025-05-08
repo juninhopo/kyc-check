@@ -340,7 +340,7 @@
 
   .kyc-preview {
     background-color: var(--light-card);
-    border: 1px solid var(--light-border);
+    border: 1px solid #3e4c59;
     border-radius: 0.5rem;
   }
 
@@ -350,32 +350,28 @@
   }
 
   .kyc-compare-btn {
-    background-color: #0284c7;
-    color: white;
+    background-color: white;
+    color: #9aa5b1;
     transition: all 0.2s ease-in-out;
+    border: 1px solid #3e4c59;
   }
 
-  .kyc-compare-btn:hover {
-    background-color: #0369a1;
-  }
 
   .dark .kyc-compare-btn {
-    background-color: #0369a1;
+    background-color: #323a4e;
   }
 
-  .dark .kyc-compare-btn:hover {
-    background-color: #075985;
-  }
 
   .kyc-debug-btn {
     background-color: white;
-    border: 1px solid var(--light-border);
-    color: #0284c7;
+    border: 1px solid #3e4c59;
+    color: #9aa5b1;
   }
 
   .dark .kyc-debug-btn {
+    background-color: #323a4e;
     border-color: var(--dark-border);
-    color: #38bdf8;
+    color: #9aa5b1;
   }
 
   .kyc-spinner {

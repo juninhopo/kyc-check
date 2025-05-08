@@ -30,7 +30,7 @@ export const DebugInfo = ({ data }: DebugInfoProps) => {
       {showDebug && (
         <div id="debug-section" className="kyc-card rounded-lg shadow-md mt-4 sm:mt-6 p-4 sm:p-6">
           <h3
-            className="text-lg sm:text-xl font-semibold font-display text-primary-700 dark:text-gray-200 mb-3 sm:mb-4 border-b pb-2"
+            className="text-lg sm:text-xl font-semibold font-display text-primary-700  dark:text-gray-200 mb-3 sm:mb-4 border-b pb-2"
             data-lang-pt="Informações de Debug"
             data-lang-en="Debug Information"
           >
