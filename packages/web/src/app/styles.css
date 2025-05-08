@@ -305,6 +305,9 @@
 
   /* Componentes do KYCValidator */
   .kyc-card {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
     background-color: var(--light-card);
     border: 1px solid var(--light-border);
     border-radius: 0.5rem;
@@ -365,7 +368,7 @@
   }
 
   .kyc-debug-btn {
-    background-color: transparent;
+    background-color: white;
     border: 1px solid var(--light-border);
     color: #0284c7;
   }
@@ -396,12 +399,13 @@
   }
 
   .kyc-lang-active {
-    color: #0284c7;
+    color: #323f4b;
     font-weight: 600;
+    border: 1px solid gray;
   }
 
   .dark .kyc-lang-active {
-    color: #38bdf8;
+    color: white;
   }
 
   /* Animações */
