@@ -9,7 +9,6 @@ You can use documents such as a driver's license to verify if it matches the pho
   - [📋 Table of Contents](#-table-of-contents)
   - [✨ Features](#-features)
   - [📚 Articles](#-articles)
-  - [🌐 Live Demo](#-live-demo)
   - [🚀 Installation](#-installation)
   - [⚙️ Environment Setup](#️-environment-setup)
   - [💻 Usage](#-usage)
@@ -42,9 +41,6 @@ You can use documents such as a driver's license to verify if it matches the pho
 
 - [Basic KYC Implementation Guide using KYC_CHECK](https://dev.to/juninhopo/basic-kyc-implementation-guide-using-kyccheck-3fld) - A practical guide on how to implement and use the KYC_CHECK library in your projects.
 
-## 🌐 Live Demo
-
-A live demo is available at: [https://kyc-check-production.up.railway.app/](https://kyc-check-production.up.railway.app/)
 
 ## 🚀 Installation
 
@@ -72,15 +68,13 @@ API_THRESHOLD=0.50
 ## 💻 Usage
 
 ```bash
-# Start the development server with Tailwind CSS watching
-pnpm run dev:full
 
 # OR start only the development server (without Tailwind watching)
-pnpm run dev
+pnpm dev
 
 # Build for production
-pnpm run build
-pnpm run build:css
+pnpm build
+pnpm build:css
 
 # Start production server
 pnpm start
@@ -94,13 +88,13 @@ This project uses Tailwind CSS for styling. Here are the available commands for 
 
 ```bash
 # Build Tailwind CSS once
-pnpm run build:css
+pnpm build:css
 
 # Watch for changes and rebuild Tailwind CSS automatically
-pnpm run watch:css
+pnpm watch:css
 
 # Start development server with Tailwind CSS watching (recommended for development)
-pnpm run dev:full
+pnpm dev:full
 ```
 
 ### Custom Tailwind Components
@@ -236,6 +230,9 @@ kyc-check/
 ## 🙏 Credits
 
 - Icon designed by [Eric Viana](https://github.com/ericviana)
+- This project is based on the original [KYC-CHECK](https://github.com/juninhopo/kyc-check) by [juninhopo](https://github.com/juninhopo)
+- Special thanks to the developers of [face-api.js](https://github.com/justadudewhohacks/face-api.js) and its Node.js port by [@vladmandic](https://github.com/vladmandic/face-api)
+- Interface redesigned with Next.js and TailwindCSS for improved usability and performance
 
 ## 🤝 Contributing
 

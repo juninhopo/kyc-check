@@ -1,45 +1,36 @@
 {
-  "name": "facecheck",
+  "name": "@kyc/root",
   "version": "1.0.0",
-  "description": "A facial validation service for KYC (Know Your Customer) processes",
-  "main": "dist/index.js",
+  "description": "Monorepo para o sistema KYC de validação facial",
+  "private": true,
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "start": "node dist/index.js",
-    "build": "tsc",
-    "download-models": "ts-node src/downloadModels.ts",
-    "build:css": "tailwindcss -i ./public/tailwind.css -o ./public/css/tailwind.css",
-    "watch:css": "tailwindcss -i ./public/tailwind.css -o ./public/css/tailwind.css --watch",
-    "dev:full": "concurrently \"npm run dev\" \"npm run watch:css\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:api": "pnpm --filter @kyc/api dev",
+    "dev:web": "pnpm --filter @kyc/web dev",
+    "dev": "pnpm -r --parallel dev",
+    "build:api": "pnpm --filter @kyc/api build",
+    "build:web": "pnpm --filter @kyc/web build",
+    "build": "pnpm -r build",
+    "start:api": "pnpm --filter @kyc/api start",
+    "start:web": "pnpm --filter @kyc/web start",
+    "download-models": "pnpm --filter @kyc/api download-models",
+    "test": "pnpm -r test"
   },
   "keywords": [
     "face",
     "recognition",
     "kyc",
-    "validation"
+    "validation",
+    "monorepo"
   ],
   "author": "Darlan Jr. <kelgaxd@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "@napi-rs/canvas": "^0.1.70",
-    "@tensorflow/tfjs-node": "^4.22.0",
-    "@vladmandic/face-api": "^1.7.15",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "file-type": "^20.4.1",
-    "multer": "1.4.5-lts.2"
-  },
   "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/multer": "^1.4.12",
-    "@types/node": "^20.17.30",
-    "autoprefixer": "^10.4.21",
-    "concurrently": "^9.1.2",
-    "nodemon": "^3.1.9",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.5",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
-  }
+    "@tailwindcss/postcss": "^4.1.5",
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.8.0"
 }

@@ -23,27 +23,33 @@ RUN apt-get update && apt-get install -y \
     # Limpar cache do apt
     rm -rf /var/lib/apt/lists/*
 
+# Instalar pnpm
+RUN npm install -g pnpm
+
 # Defina o diretório de trabalho
 WORKDIR /app
 
-# Copie os arquivos de dependências (package.json e package-lock.json se existir)
-# .dockerignore evitará copiar node_modules local
-COPY package*.json ./
+# Copie os arquivos de dependências, workspace e configuração
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 
-# Instale as dependências com npm
-# Removido --force e rebuild, pois o ambiente base do TF deve ajudar
-RUN npm install
+# Copie os arquivos package.json dos pacotes individuais
+COPY packages/api/package.json ./packages/api/
+COPY packages/web/package.json ./packages/web/
 
-# Removida a etapa de cópia manual da libtensorflow.so
+# Instale as dependências com pnpm
+RUN pnpm install
 
 # Copie o restante dos arquivos do projeto (excluindo o que está no .dockerignore)
 COPY . .
 
-# Execute o build do projeto com npm
-RUN npm run build
+# Baixe os modelos de ML necessários
+RUN pnpm download-models
+
+# Execute o build do projeto com pnpm
+RUN pnpm build
 
 # Exponha a porta que o aplicativo usará
 EXPOSE 3000
 
-# Comando para iniciar o aplicativo com npm
-CMD ["npm", "start"]
+# Comando para iniciar o aplicativo
+CMD ["pnpm", "start:api"]

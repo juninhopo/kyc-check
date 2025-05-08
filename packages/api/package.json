@@ -1,0 +1,40 @@
+{
+  "name": "@kyc/api",
+  "version": "1.0.0",
+  "description": "API para validação facial em processos KYC",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "download-models": "ts-node src/downloadModels.ts"
+  },
+  "keywords": [
+    "face",
+    "recognition",
+    "kyc",
+    "validation",
+    "api"
+  ],
+  "author": "Darlan Jr. <kelgaxd@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.70",
+    "@tensorflow/tfjs-node": "^4.22.0",
+    "@vladmandic/face-api": "^1.7.15",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "file-type": "^20.4.1",
+    "multer": "1.4.5-lts.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^20.17.30",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
