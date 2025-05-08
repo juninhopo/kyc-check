@@ -10,14 +10,14 @@ export const LanguageSwitcher = ({ currentLang, onLanguageChange }: LanguageSwit
     <div className="flex items-center space-x-2">
       <button
         onClick={() => onLanguageChange('pt-br')}
-        className={`flex items-center px-2 py-1 rounded-md ${currentLang === 'pt-br' ? 'kyc-lang-active shadow' : 'opacity-50'}`}
+        className={`flex items-center px-2 py-1 rounded-md light:border dark:bg-[#323a4e] ${currentLang === 'pt-br' ? 'kyc-lang-active shadow' : 'opacity-50'}`}
       >
         <img src="https://flagcdn.com/w40/br.png" alt="Português" className="kyc-flag-icon" />
         <span className="ml-1">PT</span>
       </button>
       <button
         onClick={() => onLanguageChange('en-us')}
-        className={`flex items-center px-2 py-1 rounded-md ${currentLang === 'en-us' ? 'kyc-lang-active shadow' : 'opacity-50'}`}
+        className={`flex items-center px-2 py-1 rounded-md light:border dark:bg-[#323a4e] ${currentLang === 'en-us' ? 'kyc-lang-active shadow' : 'opacity-50'}`}
       >
         <img src="https://flagcdn.com/w40/us.png" alt="English" className="kyc-flag-icon" />
         <span className="ml-1">EN</span>

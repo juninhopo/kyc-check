@@ -21,7 +21,7 @@ export const KYCHeader = ({ currentLang, onLanguageChange }: KYCHeaderProps) => 
   const currentTheme = themeContext?.theme || 'light';
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
+    <div className="flex flex-col  items-center sm:flex-row sm:justify-between mb-6 sm:mb-8 gap-4">
       <div className="flex items-center">
         <img src="/kyc-icon.png" alt="KYC Icon" className="h-10 w-10 mr-3" />
         <h1 className="text-2xl sm:text-3xl font-bold font-display text-primary-800 dark:text-gray-100">KYC Check</h1>

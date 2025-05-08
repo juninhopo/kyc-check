@@ -351,14 +351,16 @@
 
   .kyc-compare-btn {
     background-color: white;
-    color: #9aa5b1;
+    color: #212b33;
     transition: all 0.2s ease-in-out;
     border: 1px solid #3e4c59;
+    font-weight: 600;
   }
 
 
   .dark .kyc-compare-btn {
-    background-color: #323a4e;
+    background-color: #262c3b;
+    color: #9aa5b1;
   }
 
 
