@@ -4,7 +4,6 @@ import { useState, useEffect, useContext } from 'react';
 import { faceValidationService, ValidationResult } from '@/services/api';
 import { ThemeContext } from '@/components/providers/ThemeProvider';
 import { MoonIcon, SunIcon } from '@/components/icons/ThemeIcons';
-import './KYCValidator.css';
 
 export default function KYCValidator() {
   const themeContext = useContext(ThemeContext);

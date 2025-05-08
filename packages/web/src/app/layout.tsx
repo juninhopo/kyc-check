@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { inter, montserrat } from './fonts';
 import ThemeProvider from '@/components/providers/ThemeProvider';
-import './globals.css';
+import './styles.css';
 
 
 export const metadata: Metadata = {
@@ -15,12 +15,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen font-sans">
+    <html lang="pt-BR" className={`${inter.variable} ${montserrat.variable}`} >
+      <body className="min-h-screen font-sans flex items-center justify-center">
         <ThemeProvider>
-          <main className="w-full flex items-center justify-center">
             {children}
-          </main>
         </ThemeProvider>
       </body>
     </html>
