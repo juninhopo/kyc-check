@@ -89,7 +89,7 @@ export function ImageUploader({
         }}
         transition={{ duration: 0.2 }}
         className={`
-          relative border-2 border-dashed rounded-lg cursor-pointer
+          relative border-2 p-2 shadow-md border-dashed rounded-lg cursor-pointer
           ${isDragging ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800/60'}
           hover:bg-gray-100 dark:hover:bg-gray-700/40 transition-all duration-200
         `}
@@ -106,7 +106,7 @@ export function ImageUploader({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="flex flex-col items-center justify-center p-6 shadow-md"
+              className="flex flex-col items-center justify-center p-6 "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -123,10 +123,10 @@ export function ImageUploader({
                 />
               </svg>
               <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                <span className="font-semibold">Clique para fazer upload</span> ou arraste e solte
+                <span className="font-semibold">Click to upload</span> or drag and drop
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                PNG, JPG ou JPEG
+                PNG, JPG or JPEG
               </p>
             </motion.div>
           ) : (
@@ -143,7 +143,7 @@ export function ImageUploader({
                 animate={{ filter: "blur(0px)" }}
                 transition={{ duration: 0.5 }}
                 src={imageSrc}
-                alt="Imagem selecionada"
+                alt="Selected image"
                 className="object-contain w-full max-h-48 rounded-lg"
               />
               <motion.button

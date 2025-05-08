@@ -18,7 +18,7 @@ export function ValidationResult({ result, loading }: ValidationResultProps) {
           data-lang-pt="Processando, por favor aguarde..."
           data-lang-en="Processing, please wait..."
         >
-          Processando, por favor aguarde...
+          Processing, please wait...
         </span>
       </div>
     );
@@ -103,10 +103,10 @@ export function ValidationResult({ result, loading }: ValidationResultProps) {
                     ? 'text-green-800 dark:text-green-200'
                     : 'text-red-800 dark:text-red-200'
                 }`}
+                data-lang-pt={result.isMatch ? 'As imagens correspondem!' : 'As imagens não correspondem'}
+                data-lang-en={result.isMatch ? 'The images match!' : 'The images don\'t match'}
               >
-                {result.isMatch
-                  ? 'As imagens correspondem!'
-                  : 'As imagens não correspondem'}
+                {result.isMatch ? 'The images match!' : 'The images don\'t match'}
               </motion.h3>
 
               <motion.div
@@ -132,8 +132,11 @@ export function ValidationResult({ result, loading }: ValidationResultProps) {
                     transition={{ duration: 0.8, delay: 0.3 }}
                     className="mt-2"
                   >
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">
-                      Similaridade: {Math.round(result.similarity * 100)}%
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-1"
+                       data-lang-pt={`Similaridade: ${Math.round(result.similarity * 100)}%`}
+                       data-lang-en={`Similarity: ${Math.round(result.similarity * 100)}%`}
+                    >
+                      Similarity: {Math.round(result.similarity * 100)}%
                     </p>
                     <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
                       <motion.div

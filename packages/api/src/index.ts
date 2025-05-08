@@ -3,6 +3,11 @@ if (!util.isNullOrUndefined) {
   util.isNullOrUndefined = (arg: unknown): arg is null | undefined => arg === null || arg === undefined;
 }
 
+if (util.isArray) {
+  console.log('Substituindo util.isArray depreciado por Array.isArray');
+  util.isArray = Array.isArray;
+}
+
 import '@tensorflow/tfjs-node';
 import 'dotenv/config';
 import express from 'express';
@@ -15,6 +20,8 @@ import { setupCanvas } from './utils/canvasSetup';
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 setupCanvas();
+
+process.env.TF_CPP_MIN_LOG_LEVEL = '2';
 
 const app = express();
 
@@ -30,52 +37,41 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.json());
+
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 app.use('/api/validate-faces', validateFacesRoute);
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+app.get('/health', (_req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 export const isModelLoaded = {
   ssdMobilenetv1: false,
   faceLandmark68Net: false,
-  faceRecognitionNet: false
+  faceRecognitionNet: false,
 };
 
-const startServer = async () => {
+app.listen(PORT, async () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+
   try {
-    console.log('Initializing face recognition models...');
-    const result = await loadModels();
+    console.log('Carregando modelos de ML...');
+    const loadResult = await loadModels();
 
-    if (result.success) {
-      isModelLoaded.ssdMobilenetv1 = faceapi.nets.ssdMobilenetv1.isLoaded;
-      isModelLoaded.faceLandmark68Net = faceapi.nets.faceLandmark68Net.isLoaded;
-      isModelLoaded.faceRecognitionNet = faceapi.nets.faceRecognitionNet.isLoaded;
-
-      if (isModelLoaded.ssdMobilenetv1 && isModelLoaded.faceLandmark68Net && isModelLoaded.faceRecognitionNet) {
-        console.log('Face recognition models initialized successfully.');
-      } else {
-        console.warn('Some models were not loaded correctly:');
-        console.warn(`- SSD MobileNet: ${isModelLoaded.ssdMobilenetv1 ? 'Loaded' : 'Not loaded'}`);
-        console.warn(`- Face Landmark: ${isModelLoaded.faceLandmark68Net ? 'Loaded' : 'Not loaded'}`);
-        console.warn(`- Face Recognition: ${isModelLoaded.faceRecognitionNet ? 'Loaded' : 'Not loaded'}`);
-        console.warn('Server will start, but face comparison may use mock implementation.');
-      }
+    if (loadResult.success) {
+      console.log('✅ Modelos carregados com sucesso');
+      isModelLoaded.ssdMobilenetv1 = true;
+      isModelLoaded.faceLandmark68Net = true;
+      isModelLoaded.faceRecognitionNet = true;
     } else {
-      console.error('Error initializing face recognition models:', result.error);
-      console.warn('Server will start, but face comparison will use mock implementation.');
+      console.error('❌ Falha ao carregar modelos:', loadResult.error);
+      console.warn('O sistema usará implementação alternativa em caso de falha nos modelos.');
     }
-  } catch (error) {
-    console.error('Error initializing face recognition models:', error);
-    console.warn('Server will start, but face comparison will use mock implementation.');
+  } catch (err) {
+    console.error('❌ Erro ao carregar modelos de face-api.js:', err);
+    console.warn('O sistema usará implementação alternativa em caso de falha nos modelos.');
   }
-
-  app.listen(PORT, () => {
-    console.log(`FaceCheck server running on port ${PORT}`);
-    console.log(`Access the app at http://localhost:${PORT}`);
-  });
-};
-
-startServer();
+});

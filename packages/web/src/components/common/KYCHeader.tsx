@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ThemeContext } from '@/components/providers/ThemeProvider';
+import { ThemeContext } from '@/contexts/ThemeContext';
 import { MoonIcon, SunIcon } from '@/components/icons/ThemeIcons';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
@@ -18,7 +18,7 @@ export const KYCHeader = ({ currentLang, onLanguageChange }: KYCHeaderProps) => 
     }
   };
 
-  const currentTheme = themeContext?.theme || 'light';
+  const currentTheme = themeContext?.theme || 'dark';
 
   return (
     <div className="flex flex-col  items-center sm:flex-row sm:justify-between mb-6 sm:mb-8 gap-4">

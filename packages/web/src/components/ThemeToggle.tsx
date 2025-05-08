@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from './providers/ThemeProvider';
+import { useTheme } from '../contexts/ThemeContext';
 import { SunIcon, MoonIcon } from './icons/ThemeIcons';
 
 export default function ThemeToggle() {

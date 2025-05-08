@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { faceValidationService, ValidationResult } from '@/services/api';
+import { ThemeContext } from '@/contexts/ThemeContext';
 
 // Import our new components
 import { KYCHeader } from './common/KYCHeader';
@@ -29,10 +30,24 @@ export default function KYCValidator() {
   const [currentLang, setCurrentLang] = useState('pt-br');
   const [isMounted, setIsMounted] = useState(false);
   const [activeTab, setActiveTab] = useState('face');
+  const themeContext = useContext(ThemeContext);
+
+  if (!themeContext) {
+    throw new Error('ThemeContext is not provided.');
+  }
+
+  const { theme } = themeContext;
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+
+      setActiveTab(prevTab => prevTab);
+    }
+  }, [theme, isMounted]);
 
   const handleImage1Change = (file: File) => {
     setImage1(file);
@@ -54,7 +69,7 @@ export default function KYCValidator() {
       setResult({
         isMatch: false,
         similarity: 0,
-        message: 'Ocorreu um erro durante a comparação.'
+        message: 'An error occurred during comparison.'
       });
     } finally {
       setLoading(false);
@@ -113,11 +128,17 @@ export default function KYCValidator() {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="mb-8 text-center"
       >
-        <h1 className="text-3xl font-bold text-primary-900 dark:text-gray-100">
-          Sistema de Validação KYC
+        <h1 className="text-3xl font-bold text-primary-900 dark:text-gray-100"
+            data-lang-pt="Sistema de Validação KYC"
+            data-lang-en="KYC Validation System"
+        >
+          KYC Validation System
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          Validação segura e precisa de identidade
+        <p className="mt-2 text-gray-600 dark:text-gray-300"
+           data-lang-pt="Validação segura e precisa de identidade"
+           data-lang-en="Secure and accurate identity validation"
+        >
+          Secure and accurate identity validation
         </p>
       </motion.div>
 
@@ -129,30 +150,36 @@ export default function KYCValidator() {
       >
         <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 p-1 bg-white dark:bg-gray-800">
           <motion.button
+            key={`face-tab-${theme}`}
             variants={tabVariants}
             animate={activeTab === 'face' ? 'active' : 'inactive'}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleTabChange('face')}
             className={`px-4 py-2 rounded-md text-sm font-medium ${
               activeTab === 'face'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-100'
+                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-white'
                 : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
             }`}
+            data-lang-pt="Validação Facial"
+            data-lang-en="Facial Validation"
           >
-            Validação Facial
+            Facial Validation
           </motion.button>
           <motion.button
+            key={`document-tab-${theme}`}
             variants={tabVariants}
             animate={activeTab === 'document' ? 'active' : 'inactive'}
             whileTap={{ scale: 0.98 }}
             onClick={() => handleTabChange('document')}
             className={`px-4 py-2 rounded-md text-sm font-medium ${
               activeTab === 'document'
-                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-100'
+                ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-white'
                 : 'text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white'
             }`}
+            data-lang-pt="Validação de Documento"
+            data-lang-en="Document Validation"
           >
-            Validação de Documento
+            Document Validation
           </motion.button>
         </div>
       </motion.div>
@@ -208,11 +235,17 @@ export default function KYCValidator() {
               transition={{ duration: 0.5 }}
               className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800"
             >
-              <h2 className="text-2xl font-bold mb-6 text-primary-800 dark:text-gray-100">
-                Validação de Documento
+              <h2 className="text-2xl font-bold mb-6 text-primary-800 dark:text-gray-100"
+                  data-lang-pt="Validação de Documento"
+                  data-lang-en="Document Validation"
+              >
+                Document Validation
               </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                Recurso de validação de documento em desenvolvimento.
+              <p className="text-gray-600 dark:text-gray-300"
+                 data-lang-pt="Recurso de validação de documento em desenvolvimento."
+                 data-lang-en="Document validation feature under development."
+              >
+                Document validation feature under development.
               </p>
             </motion.div>
           )}

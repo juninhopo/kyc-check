@@ -14,17 +14,39 @@ const config = {
   similarityThreshold: process.env.API_THRESHOLD ? parseFloat(process.env.API_THRESHOLD) : 0.75,
 };
 
-const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
+const loadImageAsCanvas = async (buffer: Buffer): Promise<napiCanvas.Canvas & Partial<HTMLCanvasElement>> => {
   try {
-    const tensor = tf.node.decodeImage(buffer);
+    const image = await napiCanvas.loadImage(buffer);
+
+    const width = image.width || 640;
+    const height = image.height || 480;
+
+    const canvas = safeCreateCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
+    ctx.drawImage(image, 0, 0, width, height);
+
+    return enhanceCanvasCompatibility(canvas);
+  } catch (error) {
+    console.error('Erro ao carregar imagem como canvas:', error);
+    throw new Error('Falha ao processar a imagem. Tente outro formato ou tamanho.');
+  }
+};
+
+const loadImageAsTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
+  try {
+    let tensor = tf.node.decodeImage(buffer, 3);
+
+    tensor = tensor.toFloat().div(tf.scalar(255));
 
     if (tensor.shape.length === 4) {
-      return tensor.squeeze([0]) as tf.Tensor3D;
+      tensor = tensor.squeeze([0]) as tf.Tensor3D;
     }
+
     return tensor as tf.Tensor3D;
   } catch (error) {
-    console.error('Error converting buffer to tensor:', error);
-    throw new Error('Failed to convert image to tensor');
+    console.error('Erro ao carregar imagem como tensor:', error);
+    throw new Error('Falha ao processar a imagem como tensor');
   }
 };
 
@@ -56,38 +78,21 @@ const enhanceCanvasCompatibility = (canvas: napiCanvas.Canvas): napiCanvas.Canva
   return enhancedCanvas;
 };
 
-const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.Canvas & Partial<HTMLCanvasElement>)> => {
+const loadImage = async (imagePath: string): Promise<napiCanvas.Canvas & Partial<HTMLCanvasElement>> => {
   try {
     const buffer = fs.readFileSync(imagePath);
 
     try {
-      console.log(`Loading image as tensor: ${imagePath}`);
-      return await bufferToTensor(buffer);
-    } catch (tensorError) {
-      console.warn('Failed to load image as tensor:', tensorError);
-      console.warn('Falling back to canvas approach...');
-
-      try {
-        const image = await napiCanvas.loadImage(buffer);
-
-        const width = image.width || 640;
-        const height = image.height || 480;
-
-        const canvas = safeCreateCanvas(width, height);
-        const ctx = canvas.getContext('2d');
-
-        ctx.drawImage(image, 0, 0, width, height);
-
-        return enhanceCanvasCompatibility(canvas);
-      } catch (canvasError) {
-        console.error('Failed to load image with canvas:', canvasError);
-        throw new Error('Failed to load image with any available method');
-      }
+      console.log(`Carregando imagem: ${imagePath}`);
+      return await loadImageAsCanvas(buffer);
+    } catch (canvasError) {
+      console.warn('Falha ao usar método canvas:', canvasError);
+      throw new Error('Não foi possível processar a imagem. Verifique se está em um formato válido (JPG, PNG).');
     }
   } catch (error: unknown) {
-    console.error('Error loading image:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error loading image';
-    throw new Error(`Failed to load image: ${errorMessage}`);
+    console.error('Erro ao carregar imagem:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    throw new Error(`Falha ao carregar imagem: ${errorMessage}`);
   }
 };
 
@@ -192,7 +197,6 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         detection1.descriptor,
         detection2.descriptor
       );
-
 
       const similarity = 1 - Math.min(distance, 1.0);
       const isMatch = similarity >= config.similarityThreshold;
