@@ -8,21 +8,76 @@ import { isModelLoaded } from '../index';
 import { setupCanvas, safeCreateCanvas } from '../utils/canvasSetup';
 import * as napiCanvas from '@napi-rs/canvas';
 
+// Configure TensorFlow.js for better performance and memory management
+tf.enableProdMode();
+tf.setBackend('tensorflow');
+
 setupCanvas();
 
 const config = {
   similarityThreshold: process.env.API_THRESHOLD ? parseFloat(process.env.API_THRESHOLD) : 0.75,
 };
 
+/**
+ * Ensures tensor has correct shape and channels for face detection
+ */
+const normalizeTensor = (tensor: tf.Tensor3D): tf.Tensor3D => {
+  const [height, width, channels] = tensor.shape;
+  
+  // Ensure we have 3 channels (RGB)
+  if (channels === 4) {
+    // Convert RGBA to RGB
+    const rgbTensor = tensor.slice([0, 0, 0], [height, width, 3]) as tf.Tensor3D;
+    tensor.dispose();
+    return rgbTensor;
+  } else if (channels === 1) {
+    // Convert grayscale to RGB
+    const rgbTensor = tf.stack([tensor, tensor, tensor], -1) as tf.Tensor3D;
+    tensor.dispose();
+    return rgbTensor;
+  }
+  
+  return tensor;
+};
 
 const bufferToTensor = async (buffer: Buffer): Promise<tf.Tensor3D> => {
   try {
     const tensor = tf.node.decodeImage(buffer);
 
     if (tensor.shape.length === 4) {
-      return tensor.squeeze([0]) as tf.Tensor3D;
+      const squeezed = tensor.squeeze([0]) as tf.Tensor3D;
+      tensor.dispose();
+      return normalizeTensor(squeezed);
     }
-    return tensor as tf.Tensor3D;
+
+    // Ensure the tensor has the correct shape and size
+    const [height, width, channels] = tensor.shape;
+    
+    // Resize to a standard size if the image is too large or too small
+    const maxDimension = 1024;
+    const minDimension = 224;
+    
+    let resizedTensor = normalizeTensor(tensor as tf.Tensor3D);
+    
+    if (height > maxDimension || width > maxDimension) {
+      const scale = Math.min(maxDimension / height, maxDimension / width);
+      const newHeight = Math.round(height * scale);
+      const newWidth = Math.round(width * scale);
+      
+      const tempTensor = tf.image.resizeBilinear(resizedTensor, [newHeight, newWidth]);
+      resizedTensor.dispose();
+      resizedTensor = tempTensor as tf.Tensor3D;
+    } else if (height < minDimension || width < minDimension) {
+      const scale = Math.max(minDimension / height, minDimension / width);
+      const newHeight = Math.round(height * scale);
+      const newWidth = Math.round(width * scale);
+      
+      const tempTensor = tf.image.resizeBilinear(resizedTensor, [newHeight, newWidth]);
+      resizedTensor.dispose();
+      resizedTensor = tempTensor as tf.Tensor3D;
+    }
+    
+    return resizedTensor;
   } catch (error) {
     console.error('Error converting buffer to tensor:', error);
     throw new Error('Failed to convert image to tensor');
@@ -63,7 +118,15 @@ const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.C
 
     try {
       console.log(`Loading image as tensor: ${imagePath}`);
-      return await bufferToTensor(buffer);
+      const tensor = await bufferToTensor(buffer);
+      
+      // Verify tensor shape is valid
+      const [height, width, channels] = tensor.shape;
+      if (height <= 0 || width <= 0 || channels !== 3) {
+        throw new Error(`Invalid tensor shape: ${height}x${width}x${channels}`);
+      }
+      
+      return tensor;
     } catch (tensorError) {
       console.warn('Failed to load image as tensor:', tensorError);
       console.warn('Falling back to canvas approach...');
@@ -71,8 +134,26 @@ const loadImage = async (imagePath: string): Promise<tf.Tensor3D | (napiCanvas.C
       try {
         const image = await napiCanvas.loadImage(buffer);
 
-        const width = image.width || 640;
-        const height = image.height || 480;
+        // Use consistent dimensions for canvas
+        const maxDimension = 1024;
+        const minDimension = 224;
+        
+        let width = image.width || 640;
+        let height = image.height || 480;
+        
+        // Resize if too large
+        if (width > maxDimension || height > maxDimension) {
+          const scale = Math.min(maxDimension / width, maxDimension / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        
+        // Resize if too small
+        if (width < minDimension || height < minDimension) {
+          const scale = Math.max(minDimension / width, minDimension / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
 
         const canvas = safeCreateCanvas(width, height);
         const ctx = canvas.getContext('2d');
@@ -155,6 +236,14 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
       const img2 = await loadImage(image2Path);
 
       console.log('Images loaded successfully, detecting faces...');
+      
+      // Log tensor information for debugging
+      if (img1 instanceof tf.Tensor) {
+        console.log(`Image 1 tensor shape: ${img1.shape.join('x')}`);
+      }
+      if (img2 instanceof tf.Tensor) {
+        console.log(`Image 2 tensor shape: ${img2.shape.join('x')}`);
+      }
 
       let detection1;
       try {
@@ -169,6 +258,7 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         const errorMessage = detectionError instanceof Error
           ? detectionError.message
           : 'Unknown detection error';
+        console.error('Face detection error on image 1:', errorMessage);
         throw new Error(`Face detection failed on first image: ${errorMessage}`);
       }
 
@@ -185,6 +275,7 @@ export const compareFaces = async (image1Path: string, image2Path: string): Prom
         const errorMessage = detectionError instanceof Error
           ? detectionError.message
           : 'Unknown detection error';
+        console.error('Face detection error on image 2:', errorMessage);
         throw new Error(`Face detection failed on second image: ${errorMessage}`);
       }
 
